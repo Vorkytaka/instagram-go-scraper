@@ -7,7 +7,7 @@ type Account struct {
 	Followers          float64
 	Follows            float64
 	Full_name          string
-	Id                 uint64
+	Id                 string
 	Is_private         bool
 	Is_verified        bool
 	Media_count        float64
@@ -23,7 +23,7 @@ func GetFromAccountPage(info map[string]interface{}) (account Account) {
 	account.Connected_fb_page, _ = user["connected_fb_page"].(bool)
 	account.External_url, _ = user["external_url"].(string)
 	account.Full_name, _ = user["full_name"].(string)
-	account.Id, _ = user["id"].(uint64)
+	account.Id, _ = user["id"].(string)
 	account.Is_private, _ = user["is_private"].(bool)
 	account.Is_verified, _ = user["is_verified"].(bool)
 	account.Profile_pic_url, _ = user["profile_pic_url"].(string)
