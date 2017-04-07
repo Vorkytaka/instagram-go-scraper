@@ -10,32 +10,19 @@ import (
 
 func GetAccoutByUsername(username string) (account Account) {
 	url := fmt.Sprintf(ACCOUNT_JSON_INFO, username)
-	resp, err := http.Get(url)
-	if err != nil {
-		log.Fatal(err)
-	}
-	if resp.StatusCode == 404 {
-		log.Fatal("Page Not Found, Code 404")
-	}
-	defer resp.Body.Close()
-
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	var info map[string]interface{}
-	err = json.Unmarshal(body, &info)
-	if err != nil {
-		log.Fatal(err)
-	}
-
+	info := _GetJsonFromUrl(url)
 	account = GetFromAccountPage(info)
 	return account
 }
 
 func GetMedyaByUrl(url string) (media Media) {
 	url += "?__a=1"
+	info := _GetJsonFromUrl(url)
+	media = GetFromMediaPage(info)
+	return
+}
+
+func _GetJsonFromUrl(url string) (json_body map[string]interface{}) {
 	resp, err := http.Get(url)
 	if err != nil {
 		log.Fatal(err)
@@ -50,13 +37,10 @@ func GetMedyaByUrl(url string) (media Media) {
 		log.Fatal(err)
 	}
 
-	var info map[string]interface{}
-	err = json.Unmarshal(body, &info)
+	err = json.Unmarshal(body, &json_body)
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	media = GetFromMediaPage(info)
 
 	return
 }
