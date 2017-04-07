@@ -37,5 +37,12 @@ func GetFromMediaPage(info map[string]interface{}) (media Media) {
 		media.Media_type = "image"
 	}
 
+	owner, _ := media_info["owner"].(map[string]interface{})
+	media.Owner.Id, _ = owner["id"].(uint64)
+	media.Owner.Profile_pic_url, _ = owner["profile_pic_url"].(string)
+	media.Owner.Username, _ = owner["username"].(string)
+	media.Owner.Full_name, _ = owner["full_name"].(string)
+	media.Owner.Is_private, _ = owner["is_private"].(bool)
+
 	return
 }
