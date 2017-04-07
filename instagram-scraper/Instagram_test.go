@@ -1,7 +1,12 @@
 package instagram_scraper
 
-import "testing"
+import (
+	"testing"
+)
 
 func Test_GetAccoutByUsername(t *testing.T) {
-	GetAccoutByUsername("solidlsnake")
+	account := GetAccoutByUsername("instagram")
+	if account.Username != "instagram" || account.Full_name != "Instagram" {
+		t.Error("Unexpected account info.")
+	}
 }
