@@ -4,14 +4,14 @@ import (
 	"net/http"
 	"io/ioutil"
 	"fmt"
+	"encoding/json"
 )
 
-func GetAccoutByUsername(username string) {
+func GetAccoutByUsername(username string) (account Account) {
 	url := fmt.Sprintf(ACCOUNT_JSON_INFO, username)
 	resp, err := http.Get(url)
-
 	if err != nil {
-
+		
 	}
 	defer resp.Body.Close()
 
@@ -20,5 +20,12 @@ func GetAccoutByUsername(username string) {
 
 	}
 
-	fmt.Print(body)
+	var info map[string]interface{}
+	err = json.Unmarshal(body, &info)
+	if err != nil {
+
+	}
+
+	account = GetFromAccountPage(info)
+	return account
 }
