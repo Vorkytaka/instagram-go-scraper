@@ -37,7 +37,7 @@ func Test_GetMediaByUrl(t *testing.T) {
 			"video",
 		},
 	} {
-		media := GetMedyaByUrl(test_case.url)
+		media := GetMediaByUrl(test_case.url)
 		if media.Code != test_case.code ||
 		   media.Owner.Username != test_case.username ||
 		   media.Media_type != test_case.media_type {
@@ -61,11 +61,25 @@ func Test_GetMediaByCode(t *testing.T) {
 			"video",
 		},
 	} {
-		media := GetMedyaByCode(test_case.code)
+		media := GetMediaByCode(test_case.code)
 		if media.Code != test_case.code ||
 		   media.Owner.Username != test_case.username ||
 		   media.Media_type != test_case.media_type {
 			t.Error("Unexpected media info.")
+		}
+	}
+}
+
+func Test_GetUserMedia(t *testing.T) {
+	for _, test_case := range []struct {
+		username string
+		quantity uint16
+	}{
+		{ "solidlsnake", 10 },
+	} {
+		medias := GetAccountMedia(test_case.username, test_case.quantity)
+		if len(medias) != int(test_case.quantity) {
+			t.Error("Wrong numbers of media.")
 		}
 	}
 }
