@@ -45,3 +45,27 @@ func Test_GetMediaByUrl(t *testing.T) {
 		}
 	}
 }
+
+func Test_GetMediaByCode(t *testing.T) {
+	for _, test_case := range []struct {
+		code, username, media_type string
+	}{
+		{
+			"ceiqEstT6r",
+			"solidlsnake",
+			"image",
+		},
+		{
+			"12376OtT5o",
+			"solidlsnake",
+			"video",
+		},
+	} {
+		media := GetMedyaByCode(test_case.code)
+		if media.Code != test_case.code ||
+		   media.Owner.Username != test_case.username ||
+		   media.Media_type != test_case.media_type {
+			t.Error("Unexpected media info.")
+		}
+	}
+}
