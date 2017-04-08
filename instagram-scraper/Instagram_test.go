@@ -71,7 +71,7 @@ func Test_GetMediaByCode(t *testing.T) {
 }
 
 func Test_GetUserMedia_quantity(t *testing.T) {
-	account := GetAccoutByUsername("solidlsnake")
+	count := int(GetAccoutByUsername("solidlsnake").Media_count)
 
 	for _, test_case := range []struct {
 		username string
@@ -79,7 +79,7 @@ func Test_GetUserMedia_quantity(t *testing.T) {
 		expected int
 	}{
 		{ "instagram", 10, 10 },
-		{ "solidlsnake", 999, int(account.Media_count) },
+		{ "solidlsnake", 999, count },
 	} {
 		medias := GetAccountMedia(test_case.username, test_case.quantity)
 		if len(medias) != test_case.expected {
