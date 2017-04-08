@@ -37,7 +37,7 @@ func Test_GetMediaByUrl(t *testing.T) {
 			"video",
 		},
 	} {
-		media := GetMedyaByUrl(test_case.url)
+		media := GetMediaByUrl(test_case.url)
 		if media.Code != test_case.code ||
 		   media.Owner.Username != test_case.username ||
 		   media.Media_type != test_case.media_type {
@@ -61,7 +61,7 @@ func Test_GetMediaByCode(t *testing.T) {
 			"video",
 		},
 	} {
-		media := GetMedyaByCode(test_case.code)
+		media := GetMediaByCode(test_case.code)
 		if media.Code != test_case.code ||
 		   media.Owner.Username != test_case.username ||
 		   media.Media_type != test_case.media_type {
