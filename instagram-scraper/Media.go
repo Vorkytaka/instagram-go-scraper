@@ -5,12 +5,12 @@ type Media struct {
 	Code           string
 	Comments_count float64
 	Date           uint64
-	Display_src    string
 	Id             string
 	Is_ad          bool
 	Likes_bount    float64
-	Owner          Account
+	Media_url      string
 	Media_type     string
+	Owner          Account
 }
 
 func GetFromMediaPage(info map[string]interface{}) (media Media) {
@@ -18,7 +18,6 @@ func GetFromMediaPage(info map[string]interface{}) (media Media) {
 
 	media.Caption, _ = media_info["caption"].(string)
 	media.Code, _ = media_info["code"].(string)
-	media.Display_src = media_info["display_src"].(string)
 	media.Id = media_info["id"].(string)
 	media.Is_ad = media_info["is_ad"].(bool)
 
@@ -33,8 +32,10 @@ func GetFromMediaPage(info map[string]interface{}) (media Media) {
 
 	if media_info["is_video"].(bool) {
 		media.Media_type = "video"
+		media.Media_url = media_info["video_url"].(string)
 	} else {
 		media.Media_type = "image"
+		media.Media_url = media_info["display_src"].(string)
 	}
 
 	owner, _ := media_info["owner"].(map[string]interface{})

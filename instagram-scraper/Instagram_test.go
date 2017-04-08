@@ -21,16 +21,6 @@ func Test_GetAccoutByUsername(t *testing.T) {
 }
 
 func Test_GetMediaByUrl(t *testing.T) {
-	media := GetMedyaByUrl("https://www.instagram.com/p/ceiqEstT6r/")
-	if media.Code != "ceiqEstT6r" || media.Owner.Username != "solidlsnake" || media.Media_type != "image" {
-		t.Error("Unexpected media info.")
-	}
-
-	media = GetMedyaByUrl("https://www.instagram.com/p/12376OtT5o/")
-	if media.Code != "12376OtT5o" || media.Owner.Username != "solidlsnake" || media.Media_type != "video" {
-		t.Error("Unexpected media info.")
-	}
-
 	for _, test_case := range []struct {
 		url, code, username, media_type string
 	}{
@@ -48,6 +38,30 @@ func Test_GetMediaByUrl(t *testing.T) {
 		},
 	} {
 		media := GetMedyaByUrl(test_case.url)
+		if media.Code != test_case.code ||
+		   media.Owner.Username != test_case.username ||
+		   media.Media_type != test_case.media_type {
+			t.Error("Unexpected media info.")
+		}
+	}
+}
+
+func Test_GetMediaByCode(t *testing.T) {
+	for _, test_case := range []struct {
+		code, username, media_type string
+	}{
+		{
+			"ceiqEstT6r",
+			"solidlsnake",
+			"image",
+		},
+		{
+			"12376OtT5o",
+			"solidlsnake",
+			"video",
+		},
+	} {
+		media := GetMedyaByCode(test_case.code)
 		if media.Code != test_case.code ||
 		   media.Owner.Username != test_case.username ||
 		   media.Media_type != test_case.media_type {
