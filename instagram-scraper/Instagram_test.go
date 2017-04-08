@@ -87,3 +87,18 @@ func Test_GetUserMedia_quantity(t *testing.T) {
 		}
 	}
 }
+
+func Test_GetAllUserMedia_quantity(t *testing.T) {
+	for _, test_case := range []struct {
+		username string
+	}{
+		{ "eminem" },
+		{ "solidlsnake" },
+	} {
+		expected := int(GetAccoutByUsername(test_case.username).Media_count)
+		medias := GetAllAccountMedia(test_case.username)
+		if len(medias) != expected {
+			t.Error("Wrong numbers of media.")
+		}
+	}
+}

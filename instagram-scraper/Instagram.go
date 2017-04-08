@@ -62,6 +62,12 @@ func GetAccountMedia(username string, quantity uint16) (medias []Media) {
 	return
 }
 
+func GetAllAccountMedia(username string) (medias []Media) {
+	count := uint16(GetAccoutByUsername(username).Media_count)
+	medias = GetAccountMedia(username, count)
+	return medias
+}
+
 func _GetJsonFromUrl(url string) (json_body map[string]interface{}, err error) {
 	resp, err := http.Get(url)
 	if err != nil || resp.StatusCode == 404 {
