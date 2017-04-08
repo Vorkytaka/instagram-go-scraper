@@ -16,7 +16,7 @@ func GetAccoutByUsername(username string) (account Account) {
 		log.Fatal(err)
 	}
 	account = GetFromAccountPage(info)
-	return account
+	return
 }
 
 func GetMedyaByUrl(url string) (media Media) {
