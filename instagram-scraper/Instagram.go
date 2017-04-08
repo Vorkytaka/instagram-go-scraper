@@ -20,19 +20,20 @@ func GetAccoutByUsername(username string) (account Account) {
 }
 
 func GetMedyaByUrl(url string) (media Media) {
-	if !strings.Contains(url, "?__a=1") {
-		url += "?__a=1"
-	}
+	code := strings.Split(url, "/")[4]
+	media = GetMedyaByCode(code)
+	return
+}
+
+func GetMedyaByCode(code string) (media Media) {
+	url := fmt.Sprintf(MEDIA_JSON_INFO, code)
+
 	info, err := _GetJsonFromUrl(url)
 	if err != nil {
 		log.Fatal(err)
 	}
 	media = GetFromMediaPage(info)
-	return
-}
 
-func GetMedyaByCode(code string) (media Media) {
-	media = GetMedyaByUrl(fmt.Sprintf(MEDIA_JSON_INFO, code))
 	return
 }
 
