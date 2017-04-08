@@ -3,11 +3,11 @@ package instagram_scraper
 type Media struct {
 	Caption        string
 	Code           string
-	Comments_count float64
+	Comments_count uint32
 	Date           uint64
 	Id             string
 	Is_ad          bool
-	Likes_bount    float64
+	Likes_bount    uint32
 	Media_url      string
 	Media_type     string
 	Owner          Account
@@ -21,14 +21,18 @@ func GetFromMediaPage(info map[string]interface{}) (media Media) {
 	media.Id = media_info["id"].(string)
 	media.Is_ad = media_info["is_ad"].(bool)
 
-	comments, _ := media_info["comments"].(map[string]interface{})
-	media.Comments_count, _ = comments["count"].(float64)
+	var fnum float64
 
-	fdate, _ := media_info["date"].(float64)
-	media.Date = uint64(fdate)
+	comments, _ := media_info["comments"].(map[string]interface{})
+	fnum, _ = comments["count"].(float64)
+	media.Comments_count = uint32(fnum)
+
+	fnum, _ = media_info["date"].(float64)
+	media.Date = uint64(fnum)
 
 	likes, _ := media_info["likes"].(map[string]interface{})
-	media.Likes_bount = likes["count"].(float64)
+	fnum = likes["count"].(float64)
+	media.Likes_bount = uint32(fnum)
 
 	if media_info["is_video"].(bool) {
 		media.Media_type = "video"
