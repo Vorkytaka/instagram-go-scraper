@@ -16,24 +16,49 @@ func GetAccoutByUsername(username string) (account Account) {
 		log.Fatal(err)
 	}
 	account = GetFromAccountPage(info)
-	return account
-}
-
-func GetMedyaByUrl(url string) (media Media) {
-	code := strings.Split(url, "/")[4]
-	media = GetMedyaByCode(code)
 	return
 }
 
-func GetMedyaByCode(code string) (media Media) {
-	url := fmt.Sprintf(MEDIA_JSON_INFO, code)
+func GetMediaByUrl(url string) (media Media) {
+	code := strings.Split(url, "/")[4]
+	media = GetMediaByCode(code)
+	return
+}
 
+func GetMediaByCode(code string) (media Media) {
+	url := fmt.Sprintf(MEDIA_JSON_INFO, code)
 	info, err := _GetJsonFromUrl(url)
 	if err != nil {
 		log.Fatal(err)
 	}
 	media = GetFromMediaPage(info)
+	return
+}
 
+func GetAccountMedia(username string, quantity uint16) (medias []Media) {
+	var count uint16 = 0
+	max_id := ""
+	available := true
+	for available && count < quantity {
+		url := fmt.Sprintf(ACCOUNT_MEDIA_JSON, username, max_id)
+		json_body, err := _GetJsonFromUrl(url)
+		if err != nil {
+			log.Fatal(err)
+		}
+		available, _ = json_body["more_available"].(bool)
+
+		items, _ := json_body["items"].([]interface{})
+		for _, item := range items {
+			if count >= quantity {
+				return medias
+			}
+			count++
+			info, _ := item.(map[string]interface{})
+			media := GetFromAccountMediaList(info)
+			medias = append(medias, media)
+			max_id = media.Id
+		}
+	}
 	return
 }
 

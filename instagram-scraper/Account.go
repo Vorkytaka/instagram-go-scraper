@@ -4,13 +4,13 @@ type Account struct {
 	Biography          string
 	Connected_fb_page  bool
 	External_url       string
-	Followers          float64
-	Follows            float64
+	Followers          uint32
+	Follows            uint32
 	Full_name          string
 	Id                 string
 	Is_private         bool
 	Is_verified        bool
-	Media_count        float64
+	Media_count        uint32
 	Profile_pic_url    string
 	Profile_pic_url_hd string
 	Username           string
@@ -30,14 +30,19 @@ func GetFromAccountPage(info map[string]interface{}) (account Account) {
 	account.Profile_pic_url_hd, _ = user["profile_pic_url_hd"].(string)
 	account.Username, _ = user["username"].(string)
 
+	var fnum float64
+
 	followed_by := user["followed_by"].(map[string]interface{})
-	account.Followers, _ = followed_by["count"].(float64)
+	fnum, _ = followed_by["count"].(float64)
+	account.Followers = uint32(fnum)
 
 	follows := user["follows"].(map[string]interface{})
-	account.Follows, _ = follows["count"].(float64)
+	fnum, _ = follows["count"].(float64)
+	account.Follows = uint32(fnum)
 
 	media := user["media"].(map[string]interface{})
-	account.Media_count, _ = media["count"].(float64)
+	fnum, _ = media["count"].(float64)
+	account.Media_count = uint32(fnum)
 
 	return account
 }
