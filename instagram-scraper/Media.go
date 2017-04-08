@@ -51,3 +51,8 @@ func GetFromMediaPage(info map[string]interface{}) (media Media) {
 
 	return
 }
+
+func GetFromAccountMediaList(info map[string]interface{}) (media Media) {
+	media.Id, _ = info["id"].(string)
+	return
+}

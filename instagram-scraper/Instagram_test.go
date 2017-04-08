@@ -69,3 +69,17 @@ func Test_GetMediaByCode(t *testing.T) {
 		}
 	}
 }
+
+func Test_GetUserMedia(t *testing.T) {
+	for _, test_case := range []struct {
+		username string
+		quantity uint16
+	}{
+		{ "solidlsnake", 10 },
+	} {
+		medias := GetAccountMedia(test_case.username, test_case.quantity)
+		if len(medias) != int(test_case.quantity) {
+			t.Error("Wrong numbers of media.")
+		}
+	}
+}
