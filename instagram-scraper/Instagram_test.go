@@ -102,3 +102,18 @@ func Test_GetAllUserMedia_quantity(t *testing.T) {
 		}
 	}
 }
+
+func Test_GetLocationMedia_quantity(t *testing.T) {
+	for _, test_case := range []struct {
+		location_id string
+		quantity uint16
+	}{
+		{ "17326249", 10 },
+		{ "17326249", 25 },
+	} {
+		medias := GetLocationMedia(test_case.location_id, test_case.quantity)
+		if len(medias) != int(test_case.quantity) {
+			t.Error("Wrong numbers of media.")
+		}
+	}
+}
