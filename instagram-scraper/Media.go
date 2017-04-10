@@ -111,5 +111,34 @@ func GetFromAccountMediaList(info map[string]interface{}) (media Media) {
 }
 
 func GetFromLocationMediaList(info map[string]interface{}) (media Media) {
+	media.Id, _ = info["id"].(string)
+	media.Code, _ = info["code"].(string)
+	media.Media_url, _ = info["thumbnail_src"].(string)
+	media.Caption, _ = info["caption"].(string)
+
+	fnum, _ := info["date"].(float64)
+	media.Date = uint64(fnum)
+
+	likes, ok := info["likes"].(map[string]interface{})
+	if ok {
+		fnum, _ := likes["count"].(float64)
+		media.Likes_count = uint32(fnum)
+	}
+
+	comments, ok := info["comments"].(map[string]interface{})
+	if ok {
+		fnum, _ := comments["count"].(float64)
+		media.Comments_count = uint32(fnum)
+	}
+
+	owner, _ := info["comments"].(map[string]interface{})
+	media.Owner.Id, _ = owner["id"].(string)
+
+	if info["is_video"].(bool) {
+		media.Media_type = "video"
+	} else {
+		media.Media_type = "image"
+	}
+
 	return
 }
