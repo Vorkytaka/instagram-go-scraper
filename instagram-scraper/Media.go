@@ -4,6 +4,9 @@ import (
 	"strconv"
 )
 
+const TYPE_IMAGE = "image"
+const TYPE_VIDEO = "video"
+
 type Media struct {
 	Caption        string
 	Code           string
@@ -39,10 +42,10 @@ func GetFromMediaPage(info map[string]interface{}) (media Media) {
 	media.Likes_count = uint32(fnum)
 
 	if media_info["is_video"].(bool) {
-		media.Media_type = "video"
+		media.Media_type = TYPE_VIDEO
 		media.Media_url = media_info["video_url"].(string)
 	} else {
-		media.Media_type = "image"
+		media.Media_type = TYPE_IMAGE
 		media.Media_url = media_info["display_src"].(string)
 	}
 
@@ -89,7 +92,7 @@ func GetFromAccountMediaList(info map[string]interface{}) (media Media) {
 		media.Comments_count = uint32(fnum)
 	}
 
-	if media.Media_type == "video" {
+	if media.Media_type == TYPE_VIDEO {
 		videos, ok := info["videos"].(map[string]interface{})
 		if ok {
 			standard_resolution, ok := videos["standard_resolution"].(map[string]interface{})
@@ -135,9 +138,9 @@ func GetFromLocationMediaList(info map[string]interface{}) (media Media) {
 	media.Owner.Id, _ = owner["id"].(string)
 
 	if info["is_video"].(bool) {
-		media.Media_type = "video"
+		media.Media_type = TYPE_VIDEO
 	} else {
-		media.Media_type = "image"
+		media.Media_type = TYPE_IMAGE
 	}
 
 	return
