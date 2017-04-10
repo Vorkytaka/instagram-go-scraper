@@ -109,3 +109,7 @@ func GetFromAccountMediaList(info map[string]interface{}) (media Media) {
 
 	return
 }
+
+func GetFromLocationMediaList(info map[string]interface{}) (media Media) {
+	return
+}
