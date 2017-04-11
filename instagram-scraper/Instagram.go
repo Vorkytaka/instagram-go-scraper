@@ -15,7 +15,10 @@ func GetAccoutByUsername(username string) (account Account) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	account = GetFromAccountPage(info)
+	account, ok := GetFromAccountPage(info)
+	if !ok {
+		
+	}
 	return
 }
 
