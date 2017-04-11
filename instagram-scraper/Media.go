@@ -134,7 +134,7 @@ func GetFromLocationMediaList(info map[string]interface{}) (media Media) {
 		media.Comments_count = uint32(fnum)
 	}
 
-	owner, _ := info["comments"].(map[string]interface{})
+	owner, _ := info["owner"].(map[string]interface{})
 	media.Owner.Id, _ = owner["id"].(string)
 
 	if info["is_video"].(bool) {
