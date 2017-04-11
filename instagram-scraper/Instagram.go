@@ -57,10 +57,11 @@ func GetAccountMedia(username string, quantity uint16) (medias []Media) {
 				return medias
 			}
 			count++
-			info, _ := item.(map[string]interface{})
-			media := GetFromAccountMediaList(info)
-			medias = append(medias, media)
-			max_id = media.Id
+			media, ok := GetFromAccountMediaList(item)
+			if ok {
+				medias = append(medias, media)
+				max_id = media.Id
+			}
 		}
 	}
 	return
