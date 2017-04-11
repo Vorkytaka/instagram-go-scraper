@@ -119,35 +119,41 @@ func GetFromAccountMediaList(info interface{}) (Media, bool) {
 	return media, true
 }
 
-func GetFromLocationMediaList(info map[string]interface{}) (media Media) {
-	media.Id, _ = info["id"].(string)
-	media.Code, _ = info["code"].(string)
-	media.Media_url, _ = info["thumbnail_src"].(string)
-	media.Caption, _ = info["caption"].(string)
+func GetFromLocationMediaList(info interface{}) (Media, bool) {
+	body, ok := info.(map[string]interface{})
+	if !ok {
+		return Media{}, false
+	}
 
-	fnum, _ := info["date"].(float64)
+	media := Media{}
+	media.Id, _ = body["id"].(string)
+	media.Code, _ = body["code"].(string)
+	media.Media_url, _ = body["thumbnail_src"].(string)
+	media.Caption, _ = body["caption"].(string)
+
+	fnum, _ := body["date"].(float64)
 	media.Date = uint64(fnum)
 
-	likes, ok := info["likes"].(map[string]interface{})
+	likes, ok := body["likes"].(map[string]interface{})
 	if ok {
 		fnum, _ := likes["count"].(float64)
 		media.Likes_count = uint32(fnum)
 	}
 
-	comments, ok := info["comments"].(map[string]interface{})
+	comments, ok := body["comments"].(map[string]interface{})
 	if ok {
 		fnum, _ := comments["count"].(float64)
 		media.Comments_count = uint32(fnum)
 	}
 
-	owner, _ := info["owner"].(map[string]interface{})
+	owner, _ := body["owner"].(map[string]interface{})
 	media.Owner.Id, _ = owner["id"].(string)
 
-	if info["is_video"].(bool) {
+	if body["is_video"].(bool) {
 		media.Media_type = TYPE_VIDEO
 	} else {
 		media.Media_type = TYPE_IMAGE
 	}
 
-	return
+	return media, true
 }

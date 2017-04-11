@@ -86,8 +86,10 @@ func GetLocationMedia(location_id string, quantity uint16) (medias []Media) {
 				return medias
 			}
 			count++
-			media := GetFromLocationMediaList(node.(map[string]interface{}))
-			medias = append(medias, media)
+			media, ok := GetFromLocationMediaList(node)
+			if ok {
+				medias = append(medias, media)
+			}
 		}
 
 		sub_json, _ = sub_json["page_info"].(map[string]interface{})
@@ -110,8 +112,10 @@ func GetLocationTopMedia(location_id string) (medias []Media) {
 	nodes, _ := sub_json["nodes"].([]interface{})
 	for _, node := range nodes {
 		count++
-		media := GetFromLocationMediaList(node.(map[string]interface{}))
-		medias = append(medias, media)
+		media, ok := GetFromLocationMediaList(node)
+		if ok {
+			medias = append(medias, media)
+		}
 	}
 
 	sub_json, _ = sub_json["page_info"].(map[string]interface{})
