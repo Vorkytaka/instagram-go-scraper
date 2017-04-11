@@ -4,7 +4,7 @@ import (
 	"testing"
 )
 
-func Test_GetAccoutByUsername(t *testing.T) {
+func Test_GetAccoutByUsername_exist(t *testing.T) {
 	for _, test_case := range []struct {
 		username, full_name, id string
 	}{
@@ -13,9 +13,23 @@ func Test_GetAccoutByUsername(t *testing.T) {
 	} {
 		account, err := GetAccoutByUsername(test_case.username)
 		if err != nil ||
-		   account.Username != test_case.username ||
-		   account.Full_name != test_case.full_name ||
-		   account.Id != test_case.id {
+			account.Username != test_case.username ||
+			account.Full_name != test_case.full_name ||
+			account.Id != test_case.id {
+			t.Error("Unexpected account info.")
+		}
+	}
+}
+
+func Test_GetAccoutByUsername_notExist(t *testing.T) {
+	for _, test_case := range []struct {
+		username string
+	}{
+		{"fhusdhfjashbfjfghyashf" },
+		{"fhusadhfyasifjasduiash" },
+	} {
+		_, err := GetAccoutByUsername(test_case.username)
+		if err == nil {
 			t.Error("Unexpected account info.")
 		}
 	}
