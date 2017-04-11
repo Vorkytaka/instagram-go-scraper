@@ -20,9 +20,13 @@ type Media struct {
 	Owner          Account
 }
 
-func GetFromMediaPage(info map[string]interface{}) (media Media) {
-	media_info := info["media"].(map[string]interface{})
+func GetFromMediaPage(info map[string]interface{}) (Media, bool) {
+	media_info, ok := info["media"].(map[string]interface{})
+	if !ok {
+		return Media{}, false
+	}
 
+	media := Media{}
 	media.Caption, _ = media_info["caption"].(string)
 	media.Code, _ = media_info["code"].(string)
 	media.Id = media_info["id"].(string)
@@ -56,7 +60,7 @@ func GetFromMediaPage(info map[string]interface{}) (media Media) {
 	media.Owner.Full_name, _ = owner["full_name"].(string)
 	media.Owner.Is_private, _ = owner["is_private"].(bool)
 
-	return
+	return media, true
 }
 
 func GetFromAccountMediaList(info interface{}) (Media, bool) {

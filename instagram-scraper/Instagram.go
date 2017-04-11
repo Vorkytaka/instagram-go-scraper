@@ -35,7 +35,10 @@ func GetMediaByCode(code string) (media Media) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	media = GetFromMediaPage(info)
+	media, ok := GetFromMediaPage(info)
+	if !ok {
+
+	}
 	return
 }
 
