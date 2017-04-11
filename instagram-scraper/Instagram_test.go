@@ -87,6 +87,20 @@ func Test_GetMediaByCode(t *testing.T) {
 	}
 }
 
+func Test_GetMediaByCode_notExist(t *testing.T) {
+	for _, test_case := range []struct {
+		code string
+	}{
+		{ "aaaaaaaaaa" },
+		{ "abcdefghij" },
+	} {
+		_, err := GetMediaByCode(test_case.code)
+		if err == nil {
+			t.Error("Unexpected media info.")
+		}
+	}
+}
+
 func Test_GetUserMedia_quantity(t *testing.T) {
 	account, _ := GetAccoutByUsername("solidlsnake")
 	count := int(account.Media_count)
