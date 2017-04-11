@@ -11,8 +11,9 @@ func Test_GetAccoutByUsername(t *testing.T) {
 		{"instagram", "Instagram", "25025320"},
 		{"solidlsnake", "Konstantin", "248188406"},
 	} {
-		account := GetAccoutByUsername(test_case.username)
-		if account.Username != test_case.username ||
+		account, err := GetAccoutByUsername(test_case.username)
+		if err != nil ||
+		   account.Username != test_case.username ||
 		   account.Full_name != test_case.full_name ||
 		   account.Id != test_case.id {
 			t.Error("Unexpected account info.")
@@ -71,7 +72,8 @@ func Test_GetMediaByCode(t *testing.T) {
 }
 
 func Test_GetUserMedia_quantity(t *testing.T) {
-	count := int(GetAccoutByUsername("solidlsnake").Media_count)
+	account, _ := GetAccoutByUsername("solidlsnake")
+	count := int(account.Media_count)
 
 	for _, test_case := range []struct {
 		username string
@@ -95,7 +97,8 @@ func Test_GetAllUserMedia_quantity(t *testing.T) {
 		{ "eminem" },
 		{ "solidlsnake" },
 	} {
-		expected := int(GetAccoutByUsername(test_case.username).Media_count)
+		account, _ := GetAccoutByUsername(test_case.username)
+		expected := int(account.Media_count)
 		medias := GetAllAccountMedia(test_case.username)
 		if len(medias) != expected {
 			t.Error("Wrong numbers of media.")

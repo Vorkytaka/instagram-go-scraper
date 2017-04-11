@@ -7,19 +7,20 @@ import (
 	"encoding/json"
 	"log"
 	"strings"
+	"errors"
 )
 
-func GetAccoutByUsername(username string) (account Account) {
+func GetAccoutByUsername(username string) (Account, error) {
 	url := fmt.Sprintf(ACCOUNT_JSON_INFO, username)
 	info, err := _GetJsonFromUrl(url)
 	if err != nil {
-		log.Fatal(err)
+		return Account{}, err
 	}
 	account, ok := GetFromAccountPage(info)
 	if !ok {
-		
+		return account, errors.New("Can't parse account")
 	}
-	return
+	return account, nil
 }
 
 func GetMediaByUrl(url string) (media Media) {
@@ -117,7 +118,11 @@ func GetLocationTopMedia(location_id string) (medias []Media) {
 }
 
 func GetAllAccountMedia(username string) (medias []Media) {
-	count := uint16(GetAccoutByUsername(username).Media_count)
+	account, err := GetAccoutByUsername(username)
+	if err != nil {
+		log.Fatal(err)
+	}
+	count := uint16(account.Media_count)
 	medias = GetAccountMedia(username, count)
 	return medias
 }
