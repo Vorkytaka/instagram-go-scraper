@@ -13,9 +13,9 @@ func Test_GetAccoutByUsername_exist(t *testing.T) {
 	} {
 		account, err := GetAccoutByUsername(test_case.username)
 		if err != nil ||
-			account.Username != test_case.username ||
-			account.Full_name != test_case.full_name ||
-			account.Id != test_case.id {
+		   account.Username != test_case.username ||
+		   account.Full_name != test_case.full_name ||
+		   account.Id != test_case.id {
 			t.Error("Unexpected account info.")
 		}
 	}
@@ -52,8 +52,9 @@ func Test_GetMediaByUrl(t *testing.T) {
 			"video",
 		},
 	} {
-		media := GetMediaByUrl(test_case.url)
-		if media.Code != test_case.code ||
+		media, err := GetMediaByUrl(test_case.url)
+		if err != nil ||
+		   media.Code != test_case.code ||
 		   media.Owner.Username != test_case.username ||
 		   media.Media_type != test_case.media_type {
 			t.Error("Unexpected media info.")
@@ -76,8 +77,9 @@ func Test_GetMediaByCode(t *testing.T) {
 			"video",
 		},
 	} {
-		media := GetMediaByCode(test_case.code)
-		if media.Code != test_case.code ||
+		media, err := GetMediaByCode(test_case.code)
+		if err != nil ||
+		   media.Code != test_case.code ||
 		   media.Owner.Username != test_case.username ||
 		   media.Media_type != test_case.media_type {
 			t.Error("Unexpected media info.")

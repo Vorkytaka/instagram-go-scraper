@@ -23,23 +23,22 @@ func GetAccoutByUsername(username string) (Account, error) {
 	return account, nil
 }
 
-func GetMediaByUrl(url string) (media Media) {
+func GetMediaByUrl(url string) (Media, error) {
 	code := strings.Split(url, "/")[4]
-	media = GetMediaByCode(code)
-	return
+	return GetMediaByCode(code)
 }
 
-func GetMediaByCode(code string) (media Media) {
+func GetMediaByCode(code string) (Media, error) {
 	url := fmt.Sprintf(MEDIA_JSON_INFO, code)
 	info, err := _GetJsonFromUrl(url)
 	if err != nil {
-		log.Fatal(err)
+		return Media{}, err
 	}
 	media, ok := GetFromMediaPage(info)
 	if !ok {
-
+		return media, errors.New("Can't parse media")
 	}
-	return
+	return media, nil
 }
 
 func GetAccountMedia(username string, quantity uint16) (medias []Media) {
