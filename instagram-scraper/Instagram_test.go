@@ -117,3 +117,16 @@ func Test_GetLocationMedia_quantity(t *testing.T) {
 		}
 	}
 }
+
+func Test_GetLocationTopMedia_quantity(t *testing.T) {
+	for _, test_case := range []struct {
+		location_id string
+	}{
+		{ "17326249" },
+	} {
+		medias := GetLocationTopMedia(test_case.location_id)
+		if len(medias) != 9 {
+			t.Error("Wrong numbers of media.")
+		}
+	}
+}
