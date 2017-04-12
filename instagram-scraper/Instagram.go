@@ -115,23 +115,23 @@ func GetLocationMedia(location_id string, quantity uint16) ([]Media, error) {
 	return medias, nil
 }
 
-func GetLocationTopMedia(location_id string) ([]Media, error) {
+func GetLocationTopMedia(location_id string) ([9]Media, error) {
 	var count uint16 = 0
 	url := fmt.Sprintf(LOCATION_MEDIA_JSON, location_id, "")
 	json_body, err := _GetJsonFromUrl(url)
 	if err != nil {
-		return nil, err
+		return [9]Media{}, err
 	}
 	sub_json, _ := json_body["location"].(map[string]interface{})
 	sub_json, _ = sub_json["top_posts"].(map[string]interface{})
 
-	medias := []Media{}
+	medias := [9]Media{}
 	nodes, _ := sub_json["nodes"].([]interface{})
-	for _, node := range nodes {
+	for i, node := range nodes {
 		count++
 		media, ok := GetFromLocationMediaList(node)
 		if ok {
-			medias = append(medias, media)
+			medias[i] = media
 		}
 	}
 
