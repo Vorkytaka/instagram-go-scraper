@@ -1,12 +1,12 @@
 package instagram
 
 type Location struct {
-	Id string
-	Name string
+	Id              string
+	Name            string
 	Has_public_page bool
-	Lat float64
-	Lng float64
-	Slug string
+	Lat             float64
+	Lng             float64
+	Slug            string
 }
 
 func GetFromLocationPage(info map[string]interface{}) (Location, bool) {

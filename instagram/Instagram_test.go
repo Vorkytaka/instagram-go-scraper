@@ -13,9 +13,9 @@ func Test_GetAccoutByUsername_exist(t *testing.T) {
 	} {
 		account, err := GetAccoutByUsername(test_case.username)
 		if err != nil ||
-		   account.Username != test_case.username ||
-		   account.Full_name != test_case.full_name ||
-		   account.Id != test_case.id {
+			account.Username != test_case.username ||
+			account.Full_name != test_case.full_name ||
+			account.Id != test_case.id {
 			t.Error("Unexpected account info.")
 		}
 	}
@@ -25,8 +25,8 @@ func Test_GetAccoutByUsername_notExist(t *testing.T) {
 	for _, test_case := range []struct {
 		username string
 	}{
-		{"fhusdhfjashbfjfghyashf" },
-		{"fhusadhfyasifjasduiash" },
+		{"fhusdhfjashbfjfghyashf"},
+		{"fhusadhfyasifjasduiash"},
 	} {
 		_, err := GetAccoutByUsername(test_case.username)
 		if err == nil {
@@ -54,9 +54,9 @@ func Test_GetMediaByUrl(t *testing.T) {
 	} {
 		media, err := GetMediaByUrl(test_case.url)
 		if err != nil ||
-		   media.Code != test_case.code ||
-		   media.Owner.Username != test_case.username ||
-		   media.Media_type != test_case.media_type {
+			media.Code != test_case.code ||
+			media.Owner.Username != test_case.username ||
+			media.Media_type != test_case.media_type {
 			t.Error("Unexpected media info.")
 		}
 	}
@@ -79,9 +79,9 @@ func Test_GetMediaByCode(t *testing.T) {
 	} {
 		media, err := GetMediaByCode(test_case.code)
 		if err != nil ||
-		   media.Code != test_case.code ||
-		   media.Owner.Username != test_case.username ||
-		   media.Media_type != test_case.media_type {
+			media.Code != test_case.code ||
+			media.Owner.Username != test_case.username ||
+			media.Media_type != test_case.media_type {
 			t.Error("Unexpected media info.")
 		}
 	}
@@ -91,8 +91,8 @@ func Test_GetMediaByCode_notExist(t *testing.T) {
 	for _, test_case := range []struct {
 		code string
 	}{
-		{ "aaaaaaaaaa" },
-		{ "abcdefghij" },
+		{"aaaaaaaaaa"},
+		{"abcdefghij"},
 	} {
 		_, err := GetMediaByCode(test_case.code)
 		if err == nil {
@@ -110,8 +110,8 @@ func Test_GetUserMedia_quantity(t *testing.T) {
 		quantity uint16
 		expected int
 	}{
-		{ "instagram", 10, 10 },
-		{ "solidlsnake", 999, count },
+		{"instagram", 10, 10},
+		{"solidlsnake", 999, count},
 	} {
 		medias, err := GetAccountMedia(test_case.username, test_case.quantity)
 		if err != nil || len(medias) != test_case.expected {
@@ -124,8 +124,8 @@ func Test_GetAllUserMedia_quantity(t *testing.T) {
 	for _, test_case := range []struct {
 		username string
 	}{
-		{ "eminem" },
-		{ "solidlsnake" },
+		{"eminem"},
+		{"solidlsnake"},
 	} {
 		account, _ := GetAccoutByUsername(test_case.username)
 		expected := int(account.Media_count)
@@ -139,10 +139,10 @@ func Test_GetAllUserMedia_quantity(t *testing.T) {
 func Test_GetLocationMedia_quantity(t *testing.T) {
 	for _, test_case := range []struct {
 		location_id string
-		quantity uint16
+		quantity    uint16
 	}{
-		{ "17326249", 10 },
-		{ "17326249", 25 },
+		{"17326249", 10},
+		{"17326249", 25},
 	} {
 		medias, err := GetLocationMedia(test_case.location_id, test_case.quantity)
 		if err != nil || len(medias) != int(test_case.quantity) {
@@ -155,7 +155,7 @@ func Test_GetLocationTopMedia_quantity(t *testing.T) {
 	for _, test_case := range []struct {
 		location_id string
 	}{
-		{ "17326249" },
+		{"17326249"},
 	} {
 		medias, err := GetLocationTopMedia(test_case.location_id)
 		if err != nil || len(medias) != 9 {
@@ -168,12 +168,12 @@ func Test_GetLocationById(t *testing.T) {
 	for _, test_case := range []struct {
 		location_id, slug string
 	}{
-		{ "17326249", "moscow-russia" },
-		{ "212988663", "new-york-new-york" },
+		{"17326249", "moscow-russia"},
+		{"212988663", "new-york-new-york"},
 	} {
 		location, err := GetLocationById(test_case.location_id)
 		if err != nil ||
-		   location.Slug != test_case.slug {
+			location.Slug != test_case.slug {
 			t.Error("Wrong location info")
 		}
 	}

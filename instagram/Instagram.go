@@ -2,12 +2,12 @@
 package instagram
 
 import (
-	"net/http"
-	"io/ioutil"
-	"fmt"
 	"encoding/json"
-	"strings"
 	"errors"
+	"fmt"
+	"io/ioutil"
+	"net/http"
+	"strings"
 )
 
 func GetAccoutByUsername(username string) (Account, error) {
