@@ -16,9 +16,13 @@ type Account struct {
 	Username           string
 }
 
-func GetFromAccountPage(info map[string]interface{}) (account Account) {
-	user := info["user"].(map[string]interface{})
+func GetFromAccountPage(info map[string]interface{}) (Account, bool) {
+	user, ok := info["user"].(map[string]interface{})
+	if !ok {
+		return Account{}, false
+	}
 
+	account := Account{}
 	account.Biography, _ = user["biography"].(string)
 	account.Connected_fb_page, _ = user["connected_fb_page"].(bool)
 	account.External_url, _ = user["external_url"].(string)
@@ -44,5 +48,5 @@ func GetFromAccountPage(info map[string]interface{}) (account Account) {
 	fnum, _ = media["count"].(float64)
 	account.Media_count = uint32(fnum)
 
-	return account
+	return account, true
 }

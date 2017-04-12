@@ -4,17 +4,32 @@ import (
 	"testing"
 )
 
-func Test_GetAccoutByUsername(t *testing.T) {
+func Test_GetAccoutByUsername_exist(t *testing.T) {
 	for _, test_case := range []struct {
 		username, full_name, id string
 	}{
 		{"instagram", "Instagram", "25025320"},
 		{"solidlsnake", "Konstantin", "248188406"},
 	} {
-		account := GetAccoutByUsername(test_case.username)
-		if account.Username != test_case.username ||
+		account, err := GetAccoutByUsername(test_case.username)
+		if err != nil ||
+		   account.Username != test_case.username ||
 		   account.Full_name != test_case.full_name ||
 		   account.Id != test_case.id {
+			t.Error("Unexpected account info.")
+		}
+	}
+}
+
+func Test_GetAccoutByUsername_notExist(t *testing.T) {
+	for _, test_case := range []struct {
+		username string
+	}{
+		{"fhusdhfjashbfjfghyashf" },
+		{"fhusadhfyasifjasduiash" },
+	} {
+		_, err := GetAccoutByUsername(test_case.username)
+		if err == nil {
 			t.Error("Unexpected account info.")
 		}
 	}
@@ -37,8 +52,9 @@ func Test_GetMediaByUrl(t *testing.T) {
 			"video",
 		},
 	} {
-		media := GetMediaByUrl(test_case.url)
-		if media.Code != test_case.code ||
+		media, err := GetMediaByUrl(test_case.url)
+		if err != nil ||
+		   media.Code != test_case.code ||
 		   media.Owner.Username != test_case.username ||
 		   media.Media_type != test_case.media_type {
 			t.Error("Unexpected media info.")
@@ -61,8 +77,9 @@ func Test_GetMediaByCode(t *testing.T) {
 			"video",
 		},
 	} {
-		media := GetMediaByCode(test_case.code)
-		if media.Code != test_case.code ||
+		media, err := GetMediaByCode(test_case.code)
+		if err != nil ||
+		   media.Code != test_case.code ||
 		   media.Owner.Username != test_case.username ||
 		   media.Media_type != test_case.media_type {
 			t.Error("Unexpected media info.")
@@ -70,8 +87,23 @@ func Test_GetMediaByCode(t *testing.T) {
 	}
 }
 
+func Test_GetMediaByCode_notExist(t *testing.T) {
+	for _, test_case := range []struct {
+		code string
+	}{
+		{ "aaaaaaaaaa" },
+		{ "abcdefghij" },
+	} {
+		_, err := GetMediaByCode(test_case.code)
+		if err == nil {
+			t.Error("Unexpected media info.")
+		}
+	}
+}
+
 func Test_GetUserMedia_quantity(t *testing.T) {
-	count := int(GetAccoutByUsername("solidlsnake").Media_count)
+	account, _ := GetAccoutByUsername("solidlsnake")
+	count := int(account.Media_count)
 
 	for _, test_case := range []struct {
 		username string
@@ -81,8 +113,8 @@ func Test_GetUserMedia_quantity(t *testing.T) {
 		{ "instagram", 10, 10 },
 		{ "solidlsnake", 999, count },
 	} {
-		medias := GetAccountMedia(test_case.username, test_case.quantity)
-		if len(medias) != test_case.expected {
+		medias, err := GetAccountMedia(test_case.username, test_case.quantity)
+		if err != nil || len(medias) != test_case.expected {
 			t.Error("Wrong numbers of media.")
 		}
 	}
@@ -95,9 +127,10 @@ func Test_GetAllUserMedia_quantity(t *testing.T) {
 		{ "eminem" },
 		{ "solidlsnake" },
 	} {
-		expected := int(GetAccoutByUsername(test_case.username).Media_count)
-		medias := GetAllAccountMedia(test_case.username)
-		if len(medias) != expected {
+		account, _ := GetAccoutByUsername(test_case.username)
+		expected := int(account.Media_count)
+		medias, err := GetAllAccountMedia(test_case.username)
+		if err != nil || len(medias) != expected {
 			t.Error("Wrong numbers of media.")
 		}
 	}
@@ -111,8 +144,8 @@ func Test_GetLocationMedia_quantity(t *testing.T) {
 		{ "17326249", 10 },
 		{ "17326249", 25 },
 	} {
-		medias := GetLocationMedia(test_case.location_id, test_case.quantity)
-		if len(medias) != int(test_case.quantity) {
+		medias, err := GetLocationMedia(test_case.location_id, test_case.quantity)
+		if err != nil || len(medias) != int(test_case.quantity) {
 			t.Error("Wrong numbers of media.")
 		}
 	}
@@ -124,8 +157,8 @@ func Test_GetLocationTopMedia_quantity(t *testing.T) {
 	}{
 		{ "17326249" },
 	} {
-		medias := GetLocationTopMedia(test_case.location_id)
-		if len(medias) != 9 {
+		medias, err := GetLocationTopMedia(test_case.location_id)
+		if err != nil || len(medias) != 9 {
 			t.Error("Wrong numbers of media.")
 		}
 	}
