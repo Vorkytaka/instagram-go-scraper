@@ -12,7 +12,7 @@ import (
 
 func GetAccoutByUsername(username string) (Account, error) {
 	url := fmt.Sprintf(ACCOUNT_JSON_INFO, username)
-	info, err := _GetJsonFromUrl(url)
+	info, err := getJsonFromUrl(url)
 	if err != nil {
 		return Account{}, err
 	}
@@ -30,7 +30,7 @@ func GetMediaByUrl(url string) (Media, error) {
 
 func GetMediaByCode(code string) (Media, error) {
 	url := fmt.Sprintf(MEDIA_JSON_INFO, code)
-	info, err := _GetJsonFromUrl(url)
+	info, err := getJsonFromUrl(url)
 	if err != nil {
 		return Media{}, err
 	}
@@ -48,7 +48,7 @@ func GetAccountMedia(username string, quantity uint16) ([]Media, error) {
 	medias := []Media{}
 	for available && count < quantity {
 		url := fmt.Sprintf(ACCOUNT_MEDIA_JSON, username, max_id)
-		json_body, err := _GetJsonFromUrl(url)
+		json_body, err := getJsonFromUrl(url)
 		if err != nil {
 			return nil, err
 		}
@@ -90,7 +90,7 @@ func GetLocationMedia(location_id string, quantity uint16) ([]Media, error) {
 	medias := []Media{}
 	for has_next && count < quantity {
 		url := fmt.Sprintf(LOCATION_JSON, location_id, max_id)
-		json_body, err := _GetJsonFromUrl(url)
+		json_body, err := getJsonFromUrl(url)
 		if err != nil {
 			return nil, err
 		}
@@ -119,7 +119,7 @@ func GetLocationMedia(location_id string, quantity uint16) ([]Media, error) {
 func GetLocationTopMedia(location_id string) ([9]Media, error) {
 	var count uint16 = 0
 	url := fmt.Sprintf(LOCATION_JSON, location_id, "")
-	json_body, err := _GetJsonFromUrl(url)
+	json_body, err := getJsonFromUrl(url)
 	if err != nil {
 		return [9]Media{}, err
 	}
@@ -142,7 +142,7 @@ func GetLocationTopMedia(location_id string) ([9]Media, error) {
 
 func GetLocationById(location_id string) (Location, error) {
 	url := fmt.Sprintf(LOCATION_JSON, location_id, "")
-	json_body, err := _GetJsonFromUrl(url)
+	json_body, err := getJsonFromUrl(url)
 	if err != nil {
 		return Location{}, err
 	}
@@ -154,7 +154,7 @@ func GetLocationById(location_id string) (Location, error) {
 	return location, nil
 }
 
-func _GetJsonFromUrl(url string) (json_body map[string]interface{}, err error) {
+func getJsonFromUrl(url string) (json_body map[string]interface{}, err error) {
 	resp, err := http.Get(url)
 	if err != nil || resp.StatusCode == 404 {
 		return nil, err
