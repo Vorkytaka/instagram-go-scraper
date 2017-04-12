@@ -88,7 +88,7 @@ func GetLocationMedia(location_id string, quantity uint16) ([]Media, error) {
 	has_next := true
 	medias := []Media{}
 	for has_next && count < quantity {
-		url := fmt.Sprintf(LOCATION_MEDIA_JSON, location_id, max_id)
+		url := fmt.Sprintf(LOCATION_JSON, location_id, max_id)
 		json_body, err := _GetJsonFromUrl(url)
 		if err != nil {
 			return nil, err
@@ -117,7 +117,7 @@ func GetLocationMedia(location_id string, quantity uint16) ([]Media, error) {
 
 func GetLocationTopMedia(location_id string) ([9]Media, error) {
 	var count uint16 = 0
-	url := fmt.Sprintf(LOCATION_MEDIA_JSON, location_id, "")
+	url := fmt.Sprintf(LOCATION_JSON, location_id, "")
 	json_body, err := _GetJsonFromUrl(url)
 	if err != nil {
 		return [9]Media{}, err
@@ -137,6 +137,20 @@ func GetLocationTopMedia(location_id string) ([9]Media, error) {
 
 	sub_json, _ = sub_json["page_info"].(map[string]interface{})
 	return medias, nil
+}
+
+func GetLocationById(location_id string) (Location, error) {
+	url := fmt.Sprintf(LOCATION_JSON, location_id, "")
+	json_body, err := _GetJsonFromUrl(url)
+	if err != nil {
+		return Location{}, err
+	}
+
+	location, ok := GetFromLocationPage(json_body)
+	if !ok {
+		return Location{}, errors.New("Can't parse location")
+	}
+	return location, nil
 }
 
 func _GetJsonFromUrl(url string) (json_body map[string]interface{}, err error) {

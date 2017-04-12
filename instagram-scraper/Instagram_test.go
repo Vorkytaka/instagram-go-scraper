@@ -163,3 +163,18 @@ func Test_GetLocationTopMedia_quantity(t *testing.T) {
 		}
 	}
 }
+
+func Test_GetLocationById(t *testing.T) {
+	for _, test_case := range []struct {
+		location_id, slug string
+	}{
+		{ "17326249", "moscow-russia" },
+		{ "212988663", "new-york-new-york" },
+	} {
+		location, err := GetLocationById(test_case.location_id)
+		if err != nil ||
+		   location.Slug != test_case.slug {
+			t.Error("Wrong location info")
+		}
+	}
+}
