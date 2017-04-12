@@ -83,15 +83,16 @@ func GetAllAccountMedia(username string) ([]Media, error) {
 	return medias, nil
 }
 
-func GetLocationMedia(location_id string, quantity uint16) (medias []Media) {
+func GetLocationMedia(location_id string, quantity uint16) ([]Media, error) {
 	var count uint16 = 0
 	max_id := ""
 	has_next := true
+	medias := []Media{}
 	for has_next && count < quantity {
 		url := fmt.Sprintf(LOCATION_MEDIA_JSON, location_id, max_id)
 		json_body, err := _GetJsonFromUrl(url)
 		if err != nil {
-			log.Fatal(err)
+			return nil, err
 		}
 		sub_json, _ := json_body["location"].(map[string]interface{})
 		sub_json, _ = sub_json["media"].(map[string]interface{})
@@ -99,7 +100,7 @@ func GetLocationMedia(location_id string, quantity uint16) (medias []Media) {
 		nodes, _ := sub_json["nodes"].([]interface{})
 		for _, node := range nodes {
 			if count >= quantity {
-				return medias
+				return medias, nil
 			}
 			count++
 			media, ok := GetFromLocationMediaList(node)
@@ -112,7 +113,7 @@ func GetLocationMedia(location_id string, quantity uint16) (medias []Media) {
 		has_next, _ = sub_json["has_next_page"].(bool)
 		max_id, _ = sub_json["end_cursor"].(string)
 	}
-	return
+	return medias, nil
 }
 
 func GetLocationTopMedia(location_id string) (medias []Media) {

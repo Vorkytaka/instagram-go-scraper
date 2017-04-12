@@ -144,8 +144,8 @@ func Test_GetLocationMedia_quantity(t *testing.T) {
 		{ "17326249", 10 },
 		{ "17326249", 25 },
 	} {
-		medias := GetLocationMedia(test_case.location_id, test_case.quantity)
-		if len(medias) != int(test_case.quantity) {
+		medias, err := GetLocationMedia(test_case.location_id, test_case.quantity)
+		if err != nil || len(medias) != int(test_case.quantity) {
 			t.Error("Wrong numbers of media.")
 		}
 	}
