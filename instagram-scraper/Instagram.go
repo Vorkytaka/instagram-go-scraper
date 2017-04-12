@@ -5,7 +5,6 @@ import (
 	"io/ioutil"
 	"fmt"
 	"encoding/json"
-	"log"
 	"strings"
 	"errors"
 )
@@ -116,16 +115,17 @@ func GetLocationMedia(location_id string, quantity uint16) ([]Media, error) {
 	return medias, nil
 }
 
-func GetLocationTopMedia(location_id string) (medias []Media) {
+func GetLocationTopMedia(location_id string) ([]Media, error) {
 	var count uint16 = 0
 	url := fmt.Sprintf(LOCATION_MEDIA_JSON, location_id, "")
 	json_body, err := _GetJsonFromUrl(url)
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 	sub_json, _ := json_body["location"].(map[string]interface{})
 	sub_json, _ = sub_json["top_posts"].(map[string]interface{})
 
+	medias := []Media{}
 	nodes, _ := sub_json["nodes"].([]interface{})
 	for _, node := range nodes {
 		count++
@@ -136,7 +136,7 @@ func GetLocationTopMedia(location_id string) (medias []Media) {
 	}
 
 	sub_json, _ = sub_json["page_info"].(map[string]interface{})
-	return
+	return medias, nil
 }
 
 func _GetJsonFromUrl(url string) (json_body map[string]interface{}, err error) {
