@@ -41,22 +41,23 @@ func GetMediaByCode(code string) (Media, error) {
 	return media, nil
 }
 
-func GetAccountMedia(username string, quantity uint16) (medias []Media) {
+func GetAccountMedia(username string, quantity uint16) ([]Media, error) {
 	var count uint16 = 0
 	max_id := ""
 	available := true
+	medias := []Media{}
 	for available && count < quantity {
 		url := fmt.Sprintf(ACCOUNT_MEDIA_JSON, username, max_id)
 		json_body, err := _GetJsonFromUrl(url)
 		if err != nil {
-			log.Fatal(err)
+			return nil, err
 		}
 		available, _ = json_body["more_available"].(bool)
 
 		items, _ := json_body["items"].([]interface{})
 		for _, item := range items {
 			if count >= quantity {
-				return medias
+				return medias, nil
 			}
 			count++
 			media, ok := GetFromAccountMediaList(item)
@@ -66,7 +67,20 @@ func GetAccountMedia(username string, quantity uint16) (medias []Media) {
 			}
 		}
 	}
-	return
+	return medias, nil
+}
+
+func GetAllAccountMedia(username string) ([]Media, error) {
+	account, err := GetAccoutByUsername(username)
+	if err != nil {
+		return nil, err
+	}
+	count := uint16(account.Media_count)
+	medias, err := GetAccountMedia(username, count)
+	if err != nil {
+		return nil, err
+	}
+	return medias, nil
 }
 
 func GetLocationMedia(location_id string, quantity uint16) (medias []Media) {
@@ -122,16 +136,6 @@ func GetLocationTopMedia(location_id string) (medias []Media) {
 
 	sub_json, _ = sub_json["page_info"].(map[string]interface{})
 	return
-}
-
-func GetAllAccountMedia(username string) (medias []Media) {
-	account, err := GetAccoutByUsername(username)
-	if err != nil {
-		log.Fatal(err)
-	}
-	count := uint16(account.Media_count)
-	medias = GetAccountMedia(username, count)
-	return medias
 }
 
 func _GetJsonFromUrl(url string) (json_body map[string]interface{}, err error) {

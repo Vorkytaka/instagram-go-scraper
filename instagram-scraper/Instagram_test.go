@@ -113,8 +113,8 @@ func Test_GetUserMedia_quantity(t *testing.T) {
 		{ "instagram", 10, 10 },
 		{ "solidlsnake", 999, count },
 	} {
-		medias := GetAccountMedia(test_case.username, test_case.quantity)
-		if len(medias) != test_case.expected {
+		medias, err := GetAccountMedia(test_case.username, test_case.quantity)
+		if err != nil || len(medias) != test_case.expected {
 			t.Error("Wrong numbers of media.")
 		}
 	}
@@ -129,8 +129,8 @@ func Test_GetAllUserMedia_quantity(t *testing.T) {
 	} {
 		account, _ := GetAccoutByUsername(test_case.username)
 		expected := int(account.Media_count)
-		medias := GetAllAccountMedia(test_case.username)
-		if len(medias) != expected {
+		medias, err := GetAllAccountMedia(test_case.username)
+		if err != nil || len(medias) != expected {
 			t.Error("Wrong numbers of media.")
 		}
 	}
