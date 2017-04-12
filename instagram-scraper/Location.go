@@ -1,4 +1,4 @@
-package instagram_scraper
+package instagram
 
 type Location struct {
 	Id string

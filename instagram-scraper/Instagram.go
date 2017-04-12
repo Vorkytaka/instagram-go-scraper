@@ -1,4 +1,5 @@
-package instagram_scraper
+// A package that helps you with requesting to Instagram without a key.
+package instagram
 
 import (
 	"net/http"

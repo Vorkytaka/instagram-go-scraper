@@ -1,4 +1,4 @@
-package instagram_scraper
+package instagram
 
 const ACCOUNT_MEDIA_JSON string = "https://www.instagram.com/%s/media?max_id=%s"
 const ACCOUNT_JSON_INFO string = "https://instagram.com/%s/?__a=1"

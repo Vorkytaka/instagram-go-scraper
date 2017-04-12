@@ -1,4 +1,4 @@
-package instagram_scraper
+package instagram
 
 import (
 	"testing"
