@@ -1,4 +1,4 @@
-package instagram_scraper
+package instagram
 
 import (
 	"strconv"
@@ -20,9 +20,13 @@ type Media struct {
 	Owner          Account
 }
 
-func GetFromMediaPage(info map[string]interface{}) (media Media) {
-	media_info := info["media"].(map[string]interface{})
+func GetFromMediaPage(info map[string]interface{}) (Media, bool) {
+	media_info, ok := info["media"].(map[string]interface{})
+	if !ok {
+		return Media{}, false
+	}
 
+	media := Media{}
 	media.Caption, _ = media_info["caption"].(string)
 	media.Code, _ = media_info["code"].(string)
 	media.Id = media_info["id"].(string)
@@ -56,23 +60,29 @@ func GetFromMediaPage(info map[string]interface{}) (media Media) {
 	media.Owner.Full_name, _ = owner["full_name"].(string)
 	media.Owner.Is_private, _ = owner["is_private"].(bool)
 
-	return
+	return media, true
 }
 
-func GetFromAccountMediaList(info map[string]interface{}) (media Media) {
-	media.Code, _ = info["code"].(string)
-	media.Id, _ = info["id"].(string)
-	media.Media_type, _ = info["type"].(string)
+func GetFromAccountMediaList(info interface{}) (Media, bool) {
+	body, ok := info.(map[string]interface{})
+	if !ok {
+		return Media{}, false
+	}
 
-	sdate := info["created_time"].(string)
+	media := Media{}
+	media.Code, _ = body["code"].(string)
+	media.Id, _ = body["id"].(string)
+	media.Media_type, _ = body["type"].(string)
+
+	sdate := body["created_time"].(string)
 	media.Date, _ = strconv.ParseUint(sdate, 10, 64)
 
-	caption, ok := info["caption"].(map[string]interface{})
+	caption, ok := body["caption"].(map[string]interface{})
 	if ok {
 		media.Caption, _ = caption["text"].(string)
 	}
 
-	user, ok := info["user"].(map[string]interface{})
+	user, ok := body["user"].(map[string]interface{})
 	if ok {
 		media.Owner.Username, _ = user["username"].(string)
 		media.Owner.Full_name, _ = user["full_name"].(string)
@@ -80,20 +90,20 @@ func GetFromAccountMediaList(info map[string]interface{}) (media Media) {
 		media.Owner.Profile_pic_url, _ = user["profile_picture"].(string)
 	}
 
-	likes, ok := info["likes"].(map[string]interface{})
+	likes, ok := body["likes"].(map[string]interface{})
 	if ok {
 		fnum, _ := likes["count"].(float64)
 		media.Likes_count = uint32(fnum)
 	}
 
-	comments, ok := info["comments"].(map[string]interface{})
+	comments, ok := body["comments"].(map[string]interface{})
 	if ok {
 		fnum, _ := comments["count"].(float64)
 		media.Comments_count = uint32(fnum)
 	}
 
 	if media.Media_type == TYPE_VIDEO {
-		videos, ok := info["videos"].(map[string]interface{})
+		videos, ok := body["videos"].(map[string]interface{})
 		if ok {
 			standard_resolution, ok := videos["standard_resolution"].(map[string]interface{})
 			if ok {
@@ -101,7 +111,7 @@ func GetFromAccountMediaList(info map[string]interface{}) (media Media) {
 			}
 		}
 	} else {
-		images, ok := info["images"].(map[string]interface{})
+		images, ok := body["images"].(map[string]interface{})
 		if ok {
 			standard_resolution, ok := images["standard_resolution"].(map[string]interface{})
 			if ok {
@@ -110,38 +120,44 @@ func GetFromAccountMediaList(info map[string]interface{}) (media Media) {
 		}
 	}
 
-	return
+	return media, true
 }
 
-func GetFromLocationMediaList(info map[string]interface{}) (media Media) {
-	media.Id, _ = info["id"].(string)
-	media.Code, _ = info["code"].(string)
-	media.Media_url, _ = info["thumbnail_src"].(string)
-	media.Caption, _ = info["caption"].(string)
+func GetFromLocationMediaList(info interface{}) (Media, bool) {
+	body, ok := info.(map[string]interface{})
+	if !ok {
+		return Media{}, false
+	}
 
-	fnum, _ := info["date"].(float64)
+	media := Media{}
+	media.Id, _ = body["id"].(string)
+	media.Code, _ = body["code"].(string)
+	media.Media_url, _ = body["thumbnail_src"].(string)
+	media.Caption, _ = body["caption"].(string)
+
+	fnum, _ := body["date"].(float64)
 	media.Date = uint64(fnum)
 
-	likes, ok := info["likes"].(map[string]interface{})
+	likes, ok := body["likes"].(map[string]interface{})
 	if ok {
 		fnum, _ := likes["count"].(float64)
 		media.Likes_count = uint32(fnum)
 	}
 
-	comments, ok := info["comments"].(map[string]interface{})
+	comments, ok := body["comments"].(map[string]interface{})
 	if ok {
 		fnum, _ := comments["count"].(float64)
 		media.Comments_count = uint32(fnum)
 	}
 
-	owner, _ := info["comments"].(map[string]interface{})
+	owner, _ := body["owner"].(map[string]interface{})
 	media.Owner.Id, _ = owner["id"].(string)
 
-	if info["is_video"].(bool) {
+	if body["is_video"].(bool) {
 		media.Media_type = TYPE_VIDEO
 	} else {
 		media.Media_type = TYPE_IMAGE
 	}
 
-	return
+	return media, true
 }
