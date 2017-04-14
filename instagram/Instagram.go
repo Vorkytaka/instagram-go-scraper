@@ -154,6 +154,63 @@ func GetLocationById(location_id string) (Location, error) {
 	return location, nil
 }
 
+func GetTagMedia(tag string, quantity uint16) ([]Media, error) {
+	var count uint16 = 0
+	max_id := ""
+	has_next := true
+	medias := []Media{}
+	for has_next && count < quantity {
+		url := fmt.Sprintf(TAG_JSON, tag, max_id)
+		json_body, err := getJsonFromUrl(url)
+		if err != nil {
+			return nil, err
+		}
+		sub_json, _ := json_body["tag"].(map[string]interface{})
+		sub_json, _ = sub_json["media"].(map[string]interface{})
+
+		nodes, _ := sub_json["nodes"].([]interface{})
+		for _, node := range nodes {
+			if count >= quantity {
+				return medias, nil
+			}
+			count++
+			media, ok := GetFromLocationMediaList(node)
+			if ok {
+				medias = append(medias, media)
+			}
+		}
+
+		sub_json, _ = sub_json["page_info"].(map[string]interface{})
+		has_next, _ = sub_json["has_next_page"].(bool)
+		max_id, _ = sub_json["end_cursor"].(string)
+	}
+	return medias, nil
+}
+
+func GetTagTopMedia(tag string) ([9]Media, error) {
+	var count uint16 = 0
+	url := fmt.Sprintf(TAG_JSON, tag, "")
+	json_body, err := getJsonFromUrl(url)
+	if err != nil {
+		return [9]Media{}, err
+	}
+	sub_json, _ := json_body["tag"].(map[string]interface{})
+	sub_json, _ = sub_json["top_posts"].(map[string]interface{})
+
+	medias := [9]Media{}
+	nodes, _ := sub_json["nodes"].([]interface{})
+	for i, node := range nodes {
+		count++
+		media, ok := GetFromLocationMediaList(node)
+		if ok {
+			medias[i] = media
+		}
+	}
+
+	sub_json, _ = sub_json["page_info"].(map[string]interface{})
+	return medias, nil
+}
+
 func getJsonFromUrl(url string) (json_body map[string]interface{}, err error) {
 	resp, err := http.Get(url)
 	if err != nil || resp.StatusCode == 404 {
