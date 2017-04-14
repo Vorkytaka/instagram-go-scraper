@@ -9,7 +9,7 @@ type Location struct {
 	Slug            string
 }
 
-func GetFromLocationPage(info map[string]interface{}) (Location, bool) {
+func getFromLocationPage(info map[string]interface{}) (Location, bool) {
 	json, ok := info["location"].(map[string]interface{})
 	if !ok {
 		return Location{}, false

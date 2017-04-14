@@ -16,7 +16,7 @@ func GetAccoutByUsername(username string) (Account, error) {
 	if err != nil {
 		return Account{}, err
 	}
-	account, ok := GetFromAccountPage(info)
+	account, ok := getFromAccountPage(info)
 	if !ok {
 		return account, errors.New("Can't parse account")
 	}
@@ -34,7 +34,7 @@ func GetMediaByCode(code string) (Media, error) {
 	if err != nil {
 		return Media{}, err
 	}
-	media, ok := GetFromMediaPage(info)
+	media, ok := getFromMediaPage(info)
 	if !ok {
 		return media, errors.New("Can't parse media")
 	}
@@ -60,7 +60,7 @@ func GetAccountMedia(username string, quantity uint16) ([]Media, error) {
 				return medias, nil
 			}
 			count++
-			media, ok := GetFromAccountMediaList(item)
+			media, ok := getFromAccountMediaList(item)
 			if ok {
 				medias = append(medias, media)
 				max_id = media.Id
@@ -103,7 +103,7 @@ func GetLocationMedia(location_id string, quantity uint16) ([]Media, error) {
 				return medias, nil
 			}
 			count++
-			media, ok := GetFromLocationMediaList(node)
+			media, ok := getFromLocationMediaList(node)
 			if ok {
 				medias = append(medias, media)
 			}
@@ -128,7 +128,7 @@ func GetLocationTopMedia(location_id string) ([9]Media, error) {
 	medias := [9]Media{}
 	nodes, _ := sub_json["nodes"].([]interface{})
 	for i, node := range nodes {
-		media, ok := GetFromLocationMediaList(node)
+		media, ok := getFromLocationMediaList(node)
 		if ok {
 			medias[i] = media
 		}
@@ -145,7 +145,7 @@ func GetLocationById(location_id string) (Location, error) {
 		return Location{}, err
 	}
 
-	location, ok := GetFromLocationPage(json_body)
+	location, ok := getFromLocationPage(json_body)
 	if !ok {
 		return Location{}, errors.New("Can't parse location")
 	}
@@ -172,7 +172,7 @@ func GetTagMedia(tag string, quantity uint16) ([]Media, error) {
 				return medias, nil
 			}
 			count++
-			media, ok := GetFromLocationMediaList(node)
+			media, ok := getFromLocationMediaList(node)
 			if ok {
 				medias = append(medias, media)
 			}
@@ -197,7 +197,7 @@ func GetTagTopMedia(tag string) ([9]Media, error) {
 	medias := [9]Media{}
 	nodes, _ := sub_json["nodes"].([]interface{})
 	for i, node := range nodes {
-		media, ok := GetFromLocationMediaList(node)
+		media, ok := getFromLocationMediaList(node)
 		if ok {
 			medias[i] = media
 		}
