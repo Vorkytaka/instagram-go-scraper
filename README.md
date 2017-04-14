@@ -8,7 +8,7 @@ Install:
 ```
 $ go get -u github.com/SolidlSnake/instagram-go-scraper/instagram
 ```
-Imoort:
+Import:
 ```go
 import "github.com/SolidlSnake/instagram-go-scraper/instagram"
 ```
@@ -24,17 +24,22 @@ media, err := instagram.GetMediaByCode("code")
 media, err := instagram.GetMediaByUrl("https://instagram.com/p/code")
 
 // Get slice of account media
-account, err := instagram.GetAccountMedia("username", limit)
+media, err := instagram.GetAccountMedia("username", limit)
 // or slice of all account media
-account, err := instagram.GetAllAccountMedia("username")
+media, err := instagram.GetAllAccountMedia("username")
 
 // Get slice of location last media
-account, err := instagram.GetLocationMedia("location_id", limit)
+media, err := instagram.GetLocationMedia("location_id", limit)
 // Get array[9] of location top media
-account, err := instagram.GetLocationTopMedia("location_id")
+media, err := instagram.GetLocationTopMedia("location_id")
 
 // Get location info
 location, err := instagram.GetLocationById("location_id")
+
+// Get slice of tag last media
+media, err := instagram.GetTagMedia("tag", limit)
+// Get array[9] of tag top media
+media, err := instagram.GetLocationTopMedia("tag")
 
 ```
 
