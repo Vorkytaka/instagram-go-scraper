@@ -16,7 +16,7 @@ type Account struct {
 	Username           string
 }
 
-func GetFromAccountPage(info map[string]interface{}) (Account, bool) {
+func getFromAccountPage(info map[string]interface{}) (Account, bool) {
 	user, ok := info["user"].(map[string]interface{})
 	if !ok {
 		return Account{}, false

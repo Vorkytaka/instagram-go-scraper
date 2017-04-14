@@ -20,7 +20,7 @@ type Media struct {
 	Owner          Account
 }
 
-func GetFromMediaPage(info map[string]interface{}) (Media, bool) {
+func getFromMediaPage(info map[string]interface{}) (Media, bool) {
 	media_info, ok := info["media"].(map[string]interface{})
 	if !ok {
 		return Media{}, false
@@ -63,7 +63,7 @@ func GetFromMediaPage(info map[string]interface{}) (Media, bool) {
 	return media, true
 }
 
-func GetFromAccountMediaList(info interface{}) (Media, bool) {
+func getFromAccountMediaList(info interface{}) (Media, bool) {
 	body, ok := info.(map[string]interface{})
 	if !ok {
 		return Media{}, false
@@ -123,7 +123,7 @@ func GetFromAccountMediaList(info interface{}) (Media, bool) {
 	return media, true
 }
 
-func GetFromLocationMediaList(info interface{}) (Media, bool) {
+func getFromSearchMediaList(info interface{}) (Media, bool) {
 	body, ok := info.(map[string]interface{})
 	if !ok {
 		return Media{}, false

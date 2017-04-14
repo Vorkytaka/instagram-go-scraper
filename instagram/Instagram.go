@@ -2,21 +2,21 @@
 package instagram
 
 import (
-	"net/http"
-	"io/ioutil"
-	"fmt"
 	"encoding/json"
-	"strings"
 	"errors"
+	"fmt"
+	"io/ioutil"
+	"net/http"
+	"strings"
 )
 
 func GetAccoutByUsername(username string) (Account, error) {
 	url := fmt.Sprintf(ACCOUNT_JSON_INFO, username)
-	info, err := _GetJsonFromUrl(url)
+	info, err := getJsonFromUrl(url)
 	if err != nil {
 		return Account{}, err
 	}
-	account, ok := GetFromAccountPage(info)
+	account, ok := getFromAccountPage(info)
 	if !ok {
 		return account, errors.New("Can't parse account")
 	}
@@ -30,11 +30,11 @@ func GetMediaByUrl(url string) (Media, error) {
 
 func GetMediaByCode(code string) (Media, error) {
 	url := fmt.Sprintf(MEDIA_JSON_INFO, code)
-	info, err := _GetJsonFromUrl(url)
+	info, err := getJsonFromUrl(url)
 	if err != nil {
 		return Media{}, err
 	}
-	media, ok := GetFromMediaPage(info)
+	media, ok := getFromMediaPage(info)
 	if !ok {
 		return media, errors.New("Can't parse media")
 	}
@@ -48,7 +48,7 @@ func GetAccountMedia(username string, quantity uint16) ([]Media, error) {
 	medias := []Media{}
 	for available && count < quantity {
 		url := fmt.Sprintf(ACCOUNT_MEDIA_JSON, username, max_id)
-		json_body, err := _GetJsonFromUrl(url)
+		json_body, err := getJsonFromUrl(url)
 		if err != nil {
 			return nil, err
 		}
@@ -60,7 +60,7 @@ func GetAccountMedia(username string, quantity uint16) ([]Media, error) {
 				return medias, nil
 			}
 			count++
-			media, ok := GetFromAccountMediaList(item)
+			media, ok := getFromAccountMediaList(item)
 			if ok {
 				medias = append(medias, media)
 				max_id = media.Id
@@ -90,71 +90,120 @@ func GetLocationMedia(location_id string, quantity uint16) ([]Media, error) {
 	medias := []Media{}
 	for has_next && count < quantity {
 		url := fmt.Sprintf(LOCATION_JSON, location_id, max_id)
-		json_body, err := _GetJsonFromUrl(url)
+		json_body, err := getJsonFromUrl(url)
 		if err != nil {
 			return nil, err
 		}
-		sub_json, _ := json_body["location"].(map[string]interface{})
-		sub_json, _ = sub_json["media"].(map[string]interface{})
+		json_body, _ = json_body["location"].(map[string]interface{})
+		json_body, _ = json_body["media"].(map[string]interface{})
 
-		nodes, _ := sub_json["nodes"].([]interface{})
+		nodes, _ := json_body["nodes"].([]interface{})
 		for _, node := range nodes {
 			if count >= quantity {
 				return medias, nil
 			}
 			count++
-			media, ok := GetFromLocationMediaList(node)
+			media, ok := getFromSearchMediaList(node)
 			if ok {
 				medias = append(medias, media)
 			}
 		}
 
-		sub_json, _ = sub_json["page_info"].(map[string]interface{})
-		has_next, _ = sub_json["has_next_page"].(bool)
-		max_id, _ = sub_json["end_cursor"].(string)
+		json_body, _ = json_body["page_info"].(map[string]interface{})
+		has_next, _ = json_body["has_next_page"].(bool)
+		max_id, _ = json_body["end_cursor"].(string)
 	}
 	return medias, nil
 }
 
 func GetLocationTopMedia(location_id string) ([9]Media, error) {
-	var count uint16 = 0
 	url := fmt.Sprintf(LOCATION_JSON, location_id, "")
-	json_body, err := _GetJsonFromUrl(url)
+	json_body, err := getJsonFromUrl(url)
 	if err != nil {
 		return [9]Media{}, err
 	}
-	sub_json, _ := json_body["location"].(map[string]interface{})
-	sub_json, _ = sub_json["top_posts"].(map[string]interface{})
+	json_body, _ = json_body["location"].(map[string]interface{})
+	json_body, _ = json_body["top_posts"].(map[string]interface{})
 
 	medias := [9]Media{}
-	nodes, _ := sub_json["nodes"].([]interface{})
+	nodes, _ := json_body["nodes"].([]interface{})
 	for i, node := range nodes {
-		count++
-		media, ok := GetFromLocationMediaList(node)
+		media, ok := getFromSearchMediaList(node)
 		if ok {
 			medias[i] = media
 		}
 	}
-
-	sub_json, _ = sub_json["page_info"].(map[string]interface{})
 	return medias, nil
 }
 
 func GetLocationById(location_id string) (Location, error) {
 	url := fmt.Sprintf(LOCATION_JSON, location_id, "")
-	json_body, err := _GetJsonFromUrl(url)
+	json_body, err := getJsonFromUrl(url)
 	if err != nil {
 		return Location{}, err
 	}
 
-	location, ok := GetFromLocationPage(json_body)
+	location, ok := getFromLocationPage(json_body)
 	if !ok {
 		return Location{}, errors.New("Can't parse location")
 	}
 	return location, nil
 }
 
-func _GetJsonFromUrl(url string) (json_body map[string]interface{}, err error) {
+func GetTagMedia(tag string, quantity uint16) ([]Media, error) {
+	var count uint16 = 0
+	max_id := ""
+	has_next := true
+	medias := []Media{}
+	for has_next && count < quantity {
+		url := fmt.Sprintf(TAG_JSON, tag, max_id)
+		json_body, err := getJsonFromUrl(url)
+		if err != nil {
+			return nil, err
+		}
+		json_body, _ = json_body["tag"].(map[string]interface{})
+		json_body, _ = json_body["media"].(map[string]interface{})
+
+		nodes, _ := json_body["nodes"].([]interface{})
+		for _, node := range nodes {
+			if count >= quantity {
+				return medias, nil
+			}
+			count++
+			media, ok := getFromSearchMediaList(node)
+			if ok {
+				medias = append(medias, media)
+			}
+		}
+
+		json_body, _ = json_body["page_info"].(map[string]interface{})
+		has_next, _ = json_body["has_next_page"].(bool)
+		max_id, _ = json_body["end_cursor"].(string)
+	}
+	return medias, nil
+}
+
+func GetTagTopMedia(tag string) ([9]Media, error) {
+	url := fmt.Sprintf(TAG_JSON, tag, "")
+	json_body, err := getJsonFromUrl(url)
+	if err != nil {
+		return [9]Media{}, err
+	}
+	json_body, _ = json_body["tag"].(map[string]interface{})
+	json_body, _ = json_body["top_posts"].(map[string]interface{})
+
+	medias := [9]Media{}
+	nodes, _ := json_body["nodes"].([]interface{})
+	for i, node := range nodes {
+		media, ok := getFromSearchMediaList(node)
+		if ok {
+			medias[i] = media
+		}
+	}
+	return medias, nil
+}
+
+func getJsonFromUrl(url string) (json_body map[string]interface{}, err error) {
 	resp, err := http.Get(url)
 	if err != nil || resp.StatusCode == 404 {
 		return nil, err
