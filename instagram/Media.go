@@ -123,7 +123,7 @@ func getFromAccountMediaList(info interface{}) (Media, bool) {
 	return media, true
 }
 
-func getFromLocationMediaList(info interface{}) (Media, bool) {
+func getFromSearchMediaList(info interface{}) (Media, bool) {
 	body, ok := info.(map[string]interface{})
 	if !ok {
 		return Media{}, false

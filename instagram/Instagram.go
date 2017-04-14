@@ -103,7 +103,7 @@ func GetLocationMedia(location_id string, quantity uint16) ([]Media, error) {
 				return medias, nil
 			}
 			count++
-			media, ok := getFromLocationMediaList(node)
+			media, ok := getFromSearchMediaList(node)
 			if ok {
 				medias = append(medias, media)
 			}
@@ -128,7 +128,7 @@ func GetLocationTopMedia(location_id string) ([9]Media, error) {
 	medias := [9]Media{}
 	nodes, _ := sub_json["nodes"].([]interface{})
 	for i, node := range nodes {
-		media, ok := getFromLocationMediaList(node)
+		media, ok := getFromSearchMediaList(node)
 		if ok {
 			medias[i] = media
 		}
@@ -172,7 +172,7 @@ func GetTagMedia(tag string, quantity uint16) ([]Media, error) {
 				return medias, nil
 			}
 			count++
-			media, ok := getFromLocationMediaList(node)
+			media, ok := getFromSearchMediaList(node)
 			if ok {
 				medias = append(medias, media)
 			}
@@ -197,7 +197,7 @@ func GetTagTopMedia(tag string) ([9]Media, error) {
 	medias := [9]Media{}
 	nodes, _ := sub_json["nodes"].([]interface{})
 	for i, node := range nodes {
-		media, ok := getFromLocationMediaList(node)
+		media, ok := getFromSearchMediaList(node)
 		if ok {
 			medias[i] = media
 		}
