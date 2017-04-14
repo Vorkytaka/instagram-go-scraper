@@ -117,7 +117,6 @@ func GetLocationMedia(location_id string, quantity uint16) ([]Media, error) {
 }
 
 func GetLocationTopMedia(location_id string) ([9]Media, error) {
-	var count uint16 = 0
 	url := fmt.Sprintf(LOCATION_JSON, location_id, "")
 	json_body, err := getJsonFromUrl(url)
 	if err != nil {
@@ -129,7 +128,6 @@ func GetLocationTopMedia(location_id string) ([9]Media, error) {
 	medias := [9]Media{}
 	nodes, _ := sub_json["nodes"].([]interface{})
 	for i, node := range nodes {
-		count++
 		media, ok := GetFromLocationMediaList(node)
 		if ok {
 			medias[i] = media
@@ -188,7 +186,6 @@ func GetTagMedia(tag string, quantity uint16) ([]Media, error) {
 }
 
 func GetTagTopMedia(tag string) ([9]Media, error) {
-	var count uint16 = 0
 	url := fmt.Sprintf(TAG_JSON, tag, "")
 	json_body, err := getJsonFromUrl(url)
 	if err != nil {
@@ -200,7 +197,6 @@ func GetTagTopMedia(tag string) ([9]Media, error) {
 	medias := [9]Media{}
 	nodes, _ := sub_json["nodes"].([]interface{})
 	for i, node := range nodes {
-		count++
 		media, ok := GetFromLocationMediaList(node)
 		if ok {
 			medias[i] = media
