@@ -178,3 +178,31 @@ func Test_GetLocationById(t *testing.T) {
 		}
 	}
 }
+
+func Test_GetTagMedia_quantity(t *testing.T) {
+	for _, test_case := range []struct {
+		tag      string
+		quantity uint16
+	}{
+		{"lol", 10},
+		{"haha", 25},
+	} {
+		medias, err := GetTagMedia(test_case.tag, test_case.quantity)
+		if err != nil || len(medias) != int(test_case.quantity) {
+			t.Error("Wrong numbers of media.")
+		}
+	}
+}
+
+func Test_GetTagTopMedia_quantity(t *testing.T) {
+	for _, test_case := range []struct {
+		tag string
+	}{
+		{"lol"},
+	} {
+		medias, err := GetTagTopMedia(test_case.tag)
+		if err != nil || len(medias) != 9 {
+			t.Error("Wrong numbers of media.")
+		}
+	}
+}
