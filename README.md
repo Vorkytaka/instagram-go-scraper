@@ -41,6 +41,8 @@ media, err := instagram.GetTagMedia("tag", limit)
 // Get array[9] of tag top media
 media, err := instagram.GetLocationTopMedia("tag")
 
+// Search for users (return slice of Accounts)
+users, err := instagram.SearchForUsers("username")
 ```
 
 You'll get `err != nil` if request return 404 or if there a parsing error.
