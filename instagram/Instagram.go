@@ -212,7 +212,7 @@ func SearchForUsers(username string) ([]Account, error) {
 	accounts := []Account{}
 	users, _ := json_body["users"].([]interface{})
 	for _, user := range users {
-		account, ok := GetFromSearchPage(user.(map[string]interface{}))
+		account, ok := getFromSearchPage(user.(map[string]interface{}))
 		if ok {
 			accounts = append(accounts, account)
 		}

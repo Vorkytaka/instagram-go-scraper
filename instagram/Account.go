@@ -51,7 +51,7 @@ func getFromAccountPage(info map[string]interface{}) (Account, bool) {
 	return account, true
 }
 
-func GetFromSearchPage(info map[string]interface{}) (Account, bool) {
+func getFromSearchPage(info map[string]interface{}) (Account, bool) {
 	user, ok := info["user"].(map[string]interface{})
 	if !ok {
 		return Account{}, false
