@@ -1,4 +1,4 @@
-// A package that helps you with requesting to Instagram without a key.
+// Package instagram helps you with requesting to Instagram without a key.
 package instagram
 
 import (
@@ -10,9 +10,10 @@ import (
 	"strings"
 )
 
-func GetAccoutByUsername(username string) (Account, error) {
-	url := fmt.Sprintf(ACCOUNT_JSON_INFO, username)
-	info, err := getJsonFromUrl(url)
+// GetAccountByUsername try to find account by username.
+func GetAccountByUsername(username string) (Account, error) {
+	url := fmt.Sprintf(accountInfoURL, username)
+	info, err := getJSONFromURL(url)
 	if err != nil {
 		return Account{}, err
 	}
@@ -23,14 +24,20 @@ func GetAccoutByUsername(username string) (Account, error) {
 	return account, nil
 }
 
-func GetMediaByUrl(url string) (Media, error) {
+// GetMediaByURL try to find media by url.
+// URL should be like https://www.instagram.com/p/12376OtT5o/
+func GetMediaByURL(url string) (Media, error) {
 	code := strings.Split(url, "/")[4]
 	return GetMediaByCode(code)
 }
 
+// GetMediaByCode try to find media by code.
+// Code can be find in URL to media, after p/.
+// If URL to media is https://www.instagram.com/p/12376OtT5o/,
+// then code of the media is 12376OtT5o.
 func GetMediaByCode(code string) (Media, error) {
-	url := fmt.Sprintf(MEDIA_JSON_INFO, code)
-	info, err := getJsonFromUrl(url)
+	url := fmt.Sprintf(mediaInfoURL, code)
+	info, err := getJSONFromURL(url)
 	if err != nil {
 		return Media{}, err
 	}
@@ -41,41 +48,46 @@ func GetMediaByCode(code string) (Media, error) {
 	return media, nil
 }
 
-func GetAccountMedia(username string, quantity uint16) ([]Media, error) {
-	var count uint16 = 0
-	max_id := ""
+// GetAccountMedia try to get slice of user's media.
+// Limit set how much media you need.
+func GetAccountMedia(username string, limit uint16) ([]Media, error) {
+	var count uint16
+	maxID := ""
 	available := true
 	medias := []Media{}
-	for available && count < quantity {
-		url := fmt.Sprintf(ACCOUNT_MEDIA_JSON, username, max_id)
-		json_body, err := getJsonFromUrl(url)
+	for available && count < limit {
+		url := fmt.Sprintf(accountMediaURL, username, maxID)
+		jsonBody, err := getJSONFromURL(url)
 		if err != nil {
 			return nil, err
 		}
-		available, _ = json_body["more_available"].(bool)
+		available, _ = jsonBody["more_available"].(bool)
 
-		items, _ := json_body["items"].([]interface{})
+		items, _ := jsonBody["items"].([]interface{})
 		for _, item := range items {
-			if count >= quantity {
+			if count >= limit {
 				return medias, nil
 			}
 			count++
 			media, ok := getFromAccountMediaList(item)
 			if ok {
 				medias = append(medias, media)
-				max_id = media.Id
+				maxID = media.ID
 			}
 		}
 	}
 	return medias, nil
 }
 
+// GetAllAccountMedia try to get slice of all user's media.
+// It's function the same as GetAccountMedia,
+// except limit = count of user's media.
 func GetAllAccountMedia(username string) ([]Media, error) {
-	account, err := GetAccoutByUsername(username)
+	account, err := GetAccountByUsername(username)
 	if err != nil {
 		return nil, err
 	}
-	count := uint16(account.Media_count)
+	count := uint16(account.MediaCount)
 	medias, err := GetAccountMedia(username, count)
 	if err != nil {
 		return nil, err
@@ -83,23 +95,26 @@ func GetAllAccountMedia(username string) ([]Media, error) {
 	return medias, nil
 }
 
-func GetLocationMedia(location_id string, quantity uint16) ([]Media, error) {
-	var count uint16 = 0
-	max_id := ""
-	has_next := true
+// GetLocationMedia try to get slice of last location's media.
+// The id is a facebook location id.
+// The limit set how much media you need.
+func GetLocationMedia(id string, limit uint16) ([]Media, error) {
+	var count uint16
+	maxID := ""
+	hasNext := true
 	medias := []Media{}
-	for has_next && count < quantity {
-		url := fmt.Sprintf(LOCATION_JSON, location_id, max_id)
-		json_body, err := getJsonFromUrl(url)
+	for hasNext && count < limit {
+		url := fmt.Sprintf(locationURL, id, maxID)
+		jsonBody, err := getJSONFromURL(url)
 		if err != nil {
 			return nil, err
 		}
-		json_body, _ = json_body["location"].(map[string]interface{})
-		json_body, _ = json_body["media"].(map[string]interface{})
+		jsonBody, _ = jsonBody["location"].(map[string]interface{})
+		jsonBody, _ = jsonBody["media"].(map[string]interface{})
 
-		nodes, _ := json_body["nodes"].([]interface{})
+		nodes, _ := jsonBody["nodes"].([]interface{})
 		for _, node := range nodes {
-			if count >= quantity {
+			if count >= limit {
 				return medias, nil
 			}
 			count++
@@ -109,24 +124,27 @@ func GetLocationMedia(location_id string, quantity uint16) ([]Media, error) {
 			}
 		}
 
-		json_body, _ = json_body["page_info"].(map[string]interface{})
-		has_next, _ = json_body["has_next_page"].(bool)
-		max_id, _ = json_body["end_cursor"].(string)
+		jsonBody, _ = jsonBody["page_info"].(map[string]interface{})
+		hasNext, _ = jsonBody["has_next_page"].(bool)
+		maxID, _ = jsonBody["end_cursor"].(string)
 	}
 	return medias, nil
 }
 
-func GetLocationTopMedia(location_id string) ([9]Media, error) {
-	url := fmt.Sprintf(LOCATION_JSON, location_id, "")
-	json_body, err := getJsonFromUrl(url)
+// GetLocationTopMedia try to get array of top location's media.
+// The id is a facebook location id.
+// Length of returned array is 9.
+func GetLocationTopMedia(id string) ([9]Media, error) {
+	url := fmt.Sprintf(locationURL, id, "")
+	jsonBody, err := getJSONFromURL(url)
 	if err != nil {
 		return [9]Media{}, err
 	}
-	json_body, _ = json_body["location"].(map[string]interface{})
-	json_body, _ = json_body["top_posts"].(map[string]interface{})
+	jsonBody, _ = jsonBody["location"].(map[string]interface{})
+	jsonBody, _ = jsonBody["top_posts"].(map[string]interface{})
 
 	medias := [9]Media{}
-	nodes, _ := json_body["nodes"].([]interface{})
+	nodes, _ := jsonBody["nodes"].([]interface{})
 	for i, node := range nodes {
 		media, ok := getFromSearchMediaList(node)
 		if ok {
@@ -136,35 +154,39 @@ func GetLocationTopMedia(location_id string) ([9]Media, error) {
 	return medias, nil
 }
 
-func GetLocationById(location_id string) (Location, error) {
-	url := fmt.Sprintf(LOCATION_JSON, location_id, "")
-	json_body, err := getJsonFromUrl(url)
+// GetLocationByID try to find location info by id.
+// The id is a facebook location id.
+func GetLocationByID(id string) (Location, error) {
+	url := fmt.Sprintf(locationURL, id, "")
+	jsonBody, err := getJSONFromURL(url)
 	if err != nil {
 		return Location{}, err
 	}
 
-	location, ok := getFromLocationPage(json_body)
+	location, ok := getFromLocationPage(jsonBody)
 	if !ok {
 		return Location{}, errors.New("Can't parse location")
 	}
 	return location, nil
 }
 
+// GetTagMedia try to get slice of last tag's media.
+// The limit set how much media you need.
 func GetTagMedia(tag string, quantity uint16) ([]Media, error) {
-	var count uint16 = 0
-	max_id := ""
-	has_next := true
+	var count uint16
+	maxID := ""
+	hasNext := true
 	medias := []Media{}
-	for has_next && count < quantity {
-		url := fmt.Sprintf(TAG_JSON, tag, max_id)
-		json_body, err := getJsonFromUrl(url)
+	for hasNext && count < quantity {
+		url := fmt.Sprintf(tagURL, tag, maxID)
+		jsonBody, err := getJSONFromURL(url)
 		if err != nil {
 			return nil, err
 		}
-		json_body, _ = json_body["tag"].(map[string]interface{})
-		json_body, _ = json_body["media"].(map[string]interface{})
+		jsonBody, _ = jsonBody["tag"].(map[string]interface{})
+		jsonBody, _ = jsonBody["media"].(map[string]interface{})
 
-		nodes, _ := json_body["nodes"].([]interface{})
+		nodes, _ := jsonBody["nodes"].([]interface{})
 		for _, node := range nodes {
 			if count >= quantity {
 				return medias, nil
@@ -176,24 +198,26 @@ func GetTagMedia(tag string, quantity uint16) ([]Media, error) {
 			}
 		}
 
-		json_body, _ = json_body["page_info"].(map[string]interface{})
-		has_next, _ = json_body["has_next_page"].(bool)
-		max_id, _ = json_body["end_cursor"].(string)
+		jsonBody, _ = jsonBody["page_info"].(map[string]interface{})
+		hasNext, _ = jsonBody["has_next_page"].(bool)
+		maxID, _ = jsonBody["end_cursor"].(string)
 	}
 	return medias, nil
 }
 
+// GetTagTopMedia try to get array of top tag's media.
+// Length of returned array is 9.
 func GetTagTopMedia(tag string) ([9]Media, error) {
-	url := fmt.Sprintf(TAG_JSON, tag, "")
-	json_body, err := getJsonFromUrl(url)
+	url := fmt.Sprintf(tagURL, tag, "")
+	jsonBody, err := getJSONFromURL(url)
 	if err != nil {
 		return [9]Media{}, err
 	}
-	json_body, _ = json_body["tag"].(map[string]interface{})
-	json_body, _ = json_body["top_posts"].(map[string]interface{})
+	jsonBody, _ = jsonBody["tag"].(map[string]interface{})
+	jsonBody, _ = jsonBody["top_posts"].(map[string]interface{})
 
 	medias := [9]Media{}
-	nodes, _ := json_body["nodes"].([]interface{})
+	nodes, _ := jsonBody["nodes"].([]interface{})
 	for i, node := range nodes {
 		media, ok := getFromSearchMediaList(node)
 		if ok {
@@ -203,14 +227,16 @@ func GetTagTopMedia(tag string) ([9]Media, error) {
 	return medias, nil
 }
 
+// SearchForUsers try to find users by given username.
+// Return slice of Account with length of 0 or more.
 func SearchForUsers(username string) ([]Account, error) {
-	url := fmt.Sprintf(SEARCH_JSON, username)
-	json_body, err := getJsonFromUrl(url)
+	url := fmt.Sprintf(searchURL, username)
+	jsonBody, err := getJSONFromURL(url)
 	if err != nil {
 		return nil, err
 	}
 	accounts := []Account{}
-	users, _ := json_body["users"].([]interface{})
+	users, _ := jsonBody["users"].([]interface{})
 	for _, user := range users {
 		account, ok := getFromSearchPage(user.(map[string]interface{}))
 		if ok {
@@ -220,7 +246,7 @@ func SearchForUsers(username string) ([]Account, error) {
 	return accounts, nil
 }
 
-func getJsonFromUrl(url string) (json_body map[string]interface{}, err error) {
+func getJSONFromURL(url string) (map[string]interface{}, error) {
 	resp, err := http.Get(url)
 	if err != nil || resp.StatusCode == 404 {
 		return nil, err
@@ -232,10 +258,11 @@ func getJsonFromUrl(url string) (json_body map[string]interface{}, err error) {
 		return nil, err
 	}
 
-	err = json.Unmarshal(body, &json_body)
+	var jsonBody map[string]interface{}
+	err = json.Unmarshal(body, &jsonBody)
 	if err != nil {
 		return nil, err
 	}
 
-	return
+	return jsonBody, nil
 }

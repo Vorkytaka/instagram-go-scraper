@@ -11,11 +11,11 @@ func Test_GetAccoutByUsername_exist(t *testing.T) {
 		{"instagram", "Instagram", "25025320"},
 		{"solidlsnake", "Konstantin", "248188406"},
 	} {
-		account, err := GetAccoutByUsername(test_case.username)
+		account, err := GetAccountByUsername(test_case.username)
 		if err != nil ||
 			account.Username != test_case.username ||
-			account.Full_name != test_case.full_name ||
-			account.Id != test_case.id {
+			account.FullName != test_case.full_name ||
+			account.ID != test_case.id {
 			t.Error("Unexpected account info.")
 		}
 	}
@@ -28,7 +28,7 @@ func Test_GetAccoutByUsername_notExist(t *testing.T) {
 		{"fhusdhfjashbfjfghyashf"},
 		{"fhusadhfyasifjasduiash"},
 	} {
-		_, err := GetAccoutByUsername(test_case.username)
+		_, err := GetAccountByUsername(test_case.username)
 		if err == nil {
 			t.Error("Unexpected account info.")
 		}
@@ -52,11 +52,11 @@ func Test_GetMediaByUrl(t *testing.T) {
 			"video",
 		},
 	} {
-		media, err := GetMediaByUrl(test_case.url)
+		media, err := GetMediaByURL(test_case.url)
 		if err != nil ||
 			media.Code != test_case.code ||
 			media.Owner.Username != test_case.username ||
-			media.Media_type != test_case.media_type {
+			media.Type != test_case.media_type {
 			t.Error("Unexpected media info.")
 		}
 	}
@@ -81,7 +81,7 @@ func Test_GetMediaByCode(t *testing.T) {
 		if err != nil ||
 			media.Code != test_case.code ||
 			media.Owner.Username != test_case.username ||
-			media.Media_type != test_case.media_type {
+			media.Type != test_case.media_type {
 			t.Error("Unexpected media info.")
 		}
 	}
@@ -102,8 +102,8 @@ func Test_GetMediaByCode_notExist(t *testing.T) {
 }
 
 func Test_GetUserMedia_quantity(t *testing.T) {
-	account, _ := GetAccoutByUsername("solidlsnake")
-	count := int(account.Media_count)
+	account, _ := GetAccountByUsername("solidlsnake")
+	count := int(account.MediaCount)
 
 	for _, test_case := range []struct {
 		username string
@@ -127,8 +127,8 @@ func Test_GetAllUserMedia_quantity(t *testing.T) {
 		{"eminem"},
 		{"solidlsnake"},
 	} {
-		account, _ := GetAccoutByUsername(test_case.username)
-		expected := int(account.Media_count)
+		account, _ := GetAccountByUsername(test_case.username)
+		expected := int(account.MediaCount)
 		medias, err := GetAllAccountMedia(test_case.username)
 		if err != nil || len(medias) != expected {
 			t.Error("Wrong numbers of media.")
@@ -171,7 +171,7 @@ func Test_GetLocationById(t *testing.T) {
 		{"17326249", "moscow-russia"},
 		{"212988663", "new-york-new-york"},
 	} {
-		location, err := GetLocationById(test_case.location_id)
+		location, err := GetLocationByID(test_case.location_id)
 		if err != nil ||
 			location.Slug != test_case.slug {
 			t.Error("Wrong location info")
@@ -215,7 +215,7 @@ func Test_SearchForUsers(t *testing.T) {
 	} {
 		accounts, err := SearchForUsers(test_case.username)
 		if err != nil ||
-			accounts[0].Id != test_case.id {
+			accounts[0].ID != test_case.id {
 			t.Error("Wrong account information.")
 		}
 	}
