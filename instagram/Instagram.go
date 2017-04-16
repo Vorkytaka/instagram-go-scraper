@@ -203,6 +203,23 @@ func GetTagTopMedia(tag string) ([9]Media, error) {
 	return medias, nil
 }
 
+func SearchForUsers(username string) ([]Account, error) {
+	url := fmt.Sprintf(SEARCH_JSON, username)
+	json_body, err := getJsonFromUrl(url)
+	if err != nil {
+		return nil, err
+	}
+	accounts := []Account{}
+	users, _ := json_body["users"].([]interface{})
+	for _, user := range users {
+		account, ok := getFromSearchPage(user.(map[string]interface{}))
+		if ok {
+			accounts = append(accounts, account)
+		}
+	}
+	return accounts, nil
+}
+
 func getJsonFromUrl(url string) (json_body map[string]interface{}, err error) {
 	resp, err := http.Get(url)
 	if err != nil || resp.StatusCode == 404 {

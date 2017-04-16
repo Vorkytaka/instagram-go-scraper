@@ -50,3 +50,25 @@ func getFromAccountPage(info map[string]interface{}) (Account, bool) {
 
 	return account, true
 }
+
+func getFromSearchPage(info map[string]interface{}) (Account, bool) {
+	user, ok := info["user"].(map[string]interface{})
+	if !ok {
+		return Account{}, false
+	}
+
+	account := Account{}
+	account.Id, _ = user["pk"].(string)
+	account.Username, _ = user["username"].(string)
+	account.Full_name, _ = user["full_name"].(string)
+	account.Is_private, _ = user["is_private"].(bool)
+	account.Is_verified, _ = user["is_verified"].(bool)
+	account.Profile_pic_url, _ = user["profile_pic_url"].(string)
+
+	followers, ok := user["follower_count"].(float64)
+	if ok {
+		account.Followers = uint32(followers)
+	}
+
+	return account, true
+}
