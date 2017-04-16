@@ -17,11 +17,11 @@ import "github.com/SolidlSnake/instagram-go-scraper/instagram"
 After import you can use following functions:
 ```go
 // Get account info
-account, err := instagram.GetAccoutByUsername("username")
+account, err := instagram.GetAccountByUsername("username")
 
 // Get media info
 media, err := instagram.GetMediaByCode("code")
-media, err := instagram.GetMediaByUrl("https://instagram.com/p/code")
+media, err := instagram.GetMediaByURL("https://instagram.com/p/code")
 
 // Get slice of account media
 media, err := instagram.GetAccountMedia("username", limit)
@@ -34,7 +34,7 @@ media, err := instagram.GetLocationMedia("location_id", limit)
 media, err := instagram.GetLocationTopMedia("location_id")
 
 // Get location info
-location, err := instagram.GetLocationById("location_id")
+location, err := instagram.GetLocationByID("location_id")
 
 // Get slice of tag last media
 media, err := instagram.GetTagMedia("tag", limit)

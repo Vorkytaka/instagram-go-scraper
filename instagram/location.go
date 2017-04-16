@@ -1,12 +1,13 @@
 package instagram
 
+// A Location describes an Instagram location info.
 type Location struct {
-	Id              string
-	Name            string
-	Has_public_page bool
-	Lat             float64
-	Lng             float64
-	Slug            string
+	ID         string
+	Name       string
+	PublicPage bool
+	Lat        float64
+	Lng        float64
+	Slug       string
 }
 
 func getFromLocationPage(info map[string]interface{}) (Location, bool) {
@@ -16,9 +17,9 @@ func getFromLocationPage(info map[string]interface{}) (Location, bool) {
 	}
 
 	location := Location{}
-	location.Id, _ = json["id"].(string)
+	location.ID, _ = json["id"].(string)
 	location.Name, _ = json["name"].(string)
-	location.Has_public_page, _ = json["has_public_page"].(bool)
+	location.PublicPage, _ = json["has_public_page"].(bool)
 	location.Lat, _ = json["lat"].(float64)
 	location.Lng, _ = json["lng"].(float64)
 	location.Slug, _ = json["slug"].(string)
