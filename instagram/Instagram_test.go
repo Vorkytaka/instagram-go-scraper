@@ -206,3 +206,17 @@ func Test_GetTagTopMedia_quantity(t *testing.T) {
 		}
 	}
 }
+
+func Test_SearchForUsers(t *testing.T) {
+	for _, test_case := range []struct {
+		username, id string
+	}{
+		{"solidlsnake", "248188406" },
+	} {
+		accounts, err := SearchForUsers(test_case.username)
+		if err != nil ||
+			accounts[0].Id != test_case.id {
+			t.Error("Wrong account information.")
+		}
+	}
+}
