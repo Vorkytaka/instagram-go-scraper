@@ -17,7 +17,7 @@ import "github.com/SolidlSnake/instagram-go-scraper/instagram"
 After import you can use following functions:
 ```go
 // Get account info
-account, err := instagram.GetAccountMedia("username")
+account, err := instagram.GetAccoutByUsername("username")
 
 // Get media info
 media, err := instagram.GetMediaByCode("code")
