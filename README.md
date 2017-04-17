@@ -1,5 +1,6 @@
 # Instagram Go Scraper 
 [![GoDoc](https://godoc.org/github.com/SolidlSnake/instagram-go-scraper/instagram?status.svg)](https://godoc.org/github.com/SolidlSnake/instagram-go-scraper/instagram)
+[![Build Status](https://travis-ci.org/SolidlSnake/instagram-go-scraper.svg?branch=master)](https://travis-ci.org/SolidlSnake/instagram-go-scraper)
 
 Instagram Scraper for Golang.
 
