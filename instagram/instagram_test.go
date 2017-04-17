@@ -146,7 +146,7 @@ func Test_GetLocationMedia_quantity(t *testing.T) {
 	} {
 		medias, err := GetLocationMedia(testCase.locationID, testCase.quantity)
 		if err != nil || len(medias) != int(testCase.quantity) {
-			t.Error("Wrong numbers of media.")
+			t.Errorf("Wrong numbers of media. Expect %d, get %s.", testCase.quantity, len(medias))
 		}
 	}
 }
@@ -174,7 +174,7 @@ func Test_GetLocationById(t *testing.T) {
 		location, err := GetLocationByID(testCase.locationID)
 		if err != nil ||
 			location.Slug != testCase.slug {
-			t.Error("Wrong location info")
+			t.Errorf("Wrong location info. Expect slug %s, but get %s.", testCase.slug, location.Slug )
 		}
 	}
 }
