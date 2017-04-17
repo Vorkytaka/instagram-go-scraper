@@ -16,7 +16,13 @@ func Test_GetAccoutByUsername_exist(t *testing.T) {
 			account.Username != testCase.username ||
 			account.FullName != testCase.fullName ||
 			account.ID != testCase.id {
-			t.Error("Unexpected account info.")
+			t.Errorf(
+				"Unexpected account info. Expect full name %s, but get %s. Expect id %s, but get %s",
+				testCase.fullName,
+				testCase.id,
+				account.FullName,
+				account.ID,
+			)
 		}
 	}
 }
@@ -30,7 +36,7 @@ func Test_GetAccoutByUsername_notExist(t *testing.T) {
 	} {
 		_, err := GetAccountByUsername(testCase.username)
 		if err == nil {
-			t.Error("Unexpected account info.")
+			t.Error("Unexpected account info, account must be not exist.")
 		}
 	}
 }
@@ -146,7 +152,7 @@ func Test_GetLocationMedia_quantity(t *testing.T) {
 	} {
 		medias, err := GetLocationMedia(testCase.locationID, testCase.quantity)
 		if err != nil || len(medias) != int(testCase.quantity) {
-			t.Errorf("Wrong numbers of media. Expect %d, get %s.", testCase.quantity, len(medias))
+			t.Errorf("Wrong numbers of media. Expect %d, get %d.", testCase.quantity, len(medias))
 		}
 	}
 }
