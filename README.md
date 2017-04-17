@@ -1,4 +1,6 @@
-# Instagram Go Scraper
+# Instagram Go Scraper 
+[![GoDoc](https://godoc.org/github.com/SolidlSnake/instagram-go-scraper/instagram?status.svg)](https://godoc.org/github.com/SolidlSnake/instagram-go-scraper/instagram)
+
 Instagram Scraper for Golang.
 
 A package that helps you with requesting to Instagram without a key.
