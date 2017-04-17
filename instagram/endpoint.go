@@ -1,3 +1,11 @@
+//
+// endpoint.go
+// Copyright 2017 Konstantin Dovnar
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// http://www.apache.org/licenses/LICENSE-2.0
+//
+
 package instagram
 
 const accountMediaURL string = "https://www.instagram.com/%s/media?max_id=%s"
