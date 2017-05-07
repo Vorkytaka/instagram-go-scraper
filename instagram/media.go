@@ -33,36 +33,47 @@ type Media struct {
 }
 
 func getFromMediaPage(info map[string]interface{}) (Media, bool) {
-	mediaInfo, ok := info["media"].(map[string]interface{})
+	mediaInfo, ok := info["graphql"].(map[string]interface{})
+	if !ok {
+		return Media{}, false
+	}
+
+	mediaInfo, ok = mediaInfo["shortcode_media"].(map[string]interface{})
 	if !ok {
 		return Media{}, false
 	}
 
 	media := Media{}
-	media.Caption, _ = mediaInfo["caption"].(string)
-	media.Code, _ = mediaInfo["code"].(string)
+	media.Code, _ = mediaInfo["shortcode"].(string)
 	media.ID = mediaInfo["id"].(string)
 	media.AD = mediaInfo["is_ad"].(bool)
+	media.Caption, _ = mediaInfo["caption"].(string)
 
 	var fnum float64
 
-	comments, _ := mediaInfo["comments"].(map[string]interface{})
+	comments, _ := mediaInfo["edge_media_to_comment"].(map[string]interface{})
 	fnum, _ = comments["count"].(float64)
 	media.CommentsCount = uint32(fnum)
 
-	fnum, _ = mediaInfo["date"].(float64)
+	fnum, _ = mediaInfo["taken_at_timestamp"].(float64)
 	media.Date = uint64(fnum)
 
-	likes, _ := mediaInfo["likes"].(map[string]interface{})
+	likes, _ := mediaInfo["edge_media_preview_like"].(map[string]interface{})
 	fnum = likes["count"].(float64)
 	media.LikesCount = uint32(fnum)
+
+	caption, _ := mediaInfo["edge_media_to_caption"].(map[string]interface{})
+	caption2, _ := caption["edges"].([]interface{})
+	caption, _ = caption2[0].(map[string]interface{})
+	caption, _ = caption["node"].(map[string]interface{})
+	media.Caption = caption["text"].(string)
 
 	if mediaInfo["is_video"].(bool) {
 		media.Type = TypeVideo
 		media.MediaURL = mediaInfo["video_url"].(string)
 	} else {
 		media.Type = TypeImage
-		media.MediaURL = mediaInfo["display_src"].(string)
+		media.MediaURL = mediaInfo["display_url"].(string)
 	}
 
 	owner, _ := mediaInfo["owner"].(map[string]interface{})
