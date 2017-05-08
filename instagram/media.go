@@ -64,9 +64,11 @@ func getFromMediaPage(info map[string]interface{}) (Media, bool) {
 
 	caption, _ := mediaInfo["edge_media_to_caption"].(map[string]interface{})
 	caption2, _ := caption["edges"].([]interface{})
-	caption, _ = caption2[0].(map[string]interface{})
-	caption, _ = caption["node"].(map[string]interface{})
-	media.Caption = caption["text"].(string)
+	if len(caption2) > 0 {
+		caption, _ = caption2[0].(map[string]interface{})
+		caption, _ = caption["node"].(map[string]interface{})
+		media.Caption = caption["text"].(string)
+	}
 
 	if mediaInfo["is_video"].(bool) {
 		media.Type = TypeVideo
