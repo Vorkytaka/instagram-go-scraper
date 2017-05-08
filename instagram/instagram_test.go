@@ -57,6 +57,12 @@ func Test_GetMediaByUrl(t *testing.T) {
 			"solidlsnake",
 			"video",
 		},
+		{
+			"https://www.instagram.com/p/BJc3ORygIfa/",
+			"BJc3ORygIfa",
+			"solidlsnake",
+			"image",
+		},
 	} {
 		media, err := GetMediaByURL(testCase.url)
 		if err != nil ||
