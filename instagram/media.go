@@ -32,6 +32,14 @@ type Media struct {
 	Owner         Account
 }
 
+// Update try to update media data
+func (m *Media) Update() {
+	media, err := GetMediaByCode(m.Code)
+	if err == nil {
+		*m = media
+	}
+}
+
 func getFromMediaPage(info map[string]interface{}) (Media, bool) {
 	mediaInfo, ok := info["graphql"].(map[string]interface{})
 	if !ok {
@@ -47,7 +55,6 @@ func getFromMediaPage(info map[string]interface{}) (Media, bool) {
 	media.Code, _ = mediaInfo["shortcode"].(string)
 	media.ID = mediaInfo["id"].(string)
 	media.AD = mediaInfo["is_ad"].(bool)
-	media.Caption, _ = mediaInfo["caption"].(string)
 
 	var fnum float64
 

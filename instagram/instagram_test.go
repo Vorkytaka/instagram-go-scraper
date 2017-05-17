@@ -186,7 +186,7 @@ func Test_GetLocationById(t *testing.T) {
 		location, err := GetLocationByID(testCase.locationID)
 		if err != nil ||
 			location.Slug != testCase.slug {
-			t.Errorf("Wrong location info. Expect slug %s, but get %s.", testCase.slug, location.Slug )
+			t.Errorf("Wrong location info. Expect slug %s, but get %s.", testCase.slug, location.Slug)
 		}
 	}
 }
@@ -229,6 +229,24 @@ func Test_SearchForUsers(t *testing.T) {
 		if err != nil ||
 			accounts[0].ID != testCase.id {
 			t.Error("Wrong account information.")
+		}
+	}
+}
+
+func Test_MediaUpdateTest(t *testing.T) {
+	for _, testCase := range []struct {
+		code string
+	}{
+		{"BNhikAbg5Ph" },
+		{"BNUAZOPgdsH" },
+	} {
+		media := Media{}
+		media.Code = testCase.code
+		media.Update()
+		if len(media.Caption) == 0 ||
+			media.Date == 0 || len(media.ID) == 0 || media.LikesCount == 0 ||
+			len(media.Type) == 0 || len(media.MediaURL) == 0 {
+			t.Error("Media wasn't update")
 		}
 	}
 }

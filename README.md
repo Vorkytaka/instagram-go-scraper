@@ -48,4 +48,10 @@ media, err := instagram.GetLocationTopMedia("tag")
 users, err := instagram.SearchForUsers("username")
 ```
 
+You can update media by call `Update` method.
+```go
+media, err := instagram.GetMediaByCode("code")
+media.Update()
+```
+
 You'll get `err != nil` if request return 404 or if there a parsing error.
