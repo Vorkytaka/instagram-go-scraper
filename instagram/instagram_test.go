@@ -79,60 +79,67 @@ func Test_GetAccoutByUsername_notExist(t *testing.T) {
 	}
 }
 
-func Test_GetMediaByUrl(t *testing.T) {
-	for _, testCase := range []struct {
-		url, code, username, mediaType string
-	}{
-		{
-			"https://www.instagram.com/p/ceiqEstT6r/",
-			"ceiqEstT6r",
-			"solidlsnake",
-			"image",
-		},
-		{
-			"https://www.instagram.com/p/12376OtT5o/",
-			"12376OtT5o",
-			"solidlsnake",
-			"video",
-		},
-		{
-			"https://www.instagram.com/p/BJc3ORygIfa/",
-			"BJc3ORygIfa",
-			"solidlsnake",
-			"image",
-		},
-	} {
-		media, err := GetMediaByURL(testCase.url)
-		if err != nil ||
-			media.Code != testCase.code ||
-			media.Owner.Username != testCase.username ||
-			media.Type != testCase.mediaType {
-			t.Error("Unexpected media info.")
-		}
-	}
-}
-
 func Test_GetMediaByCode(t *testing.T) {
 	for _, testCase := range []struct {
-		code, username, mediaType string
+		caption, code, id, mediaType, mediaURL                    string
+		ownerID, ownerProfilePicURL, ownerUsername, ownerFullName string
 	}{
 		{
+			"Дружище, есть че?",
 			"ceiqEstT6r",
-			"solidlsnake",
+			"512999832411258539",
 			"image",
+			"https://scontent-arn2-1.cdninstagram.com/t51.2885-15/e15/11325321_112286479105192_62945882_n.jpg",
+			"248188406",
+			"https://scontent-arn2-1.cdninstagram.com/t51.2885-19/s150x150/17125816_320904131658190_1521093063361953792_a.jpg",
+			"solidlsnake",
+			"Konstantin",
 		},
 		{
+			"Зов джунглей",
 			"12376OtT5o",
-			"solidlsnake",
+			"970208779275943528",
 			"video",
+			"https://scontent-arn2-1.cdninstagram.com/t50.2886-16/11175992_1616299585273258_350800542_n.mp4",
+			"248188406",
+			"https://scontent-arn2-1.cdninstagram.com/t51.2885-19/s150x150/17125816_320904131658190_1521093063361953792_a.jpg",
+			"solidlsnake",
+			"Konstantin",
 		},
 	} {
 		media, err := GetMediaByCode(testCase.code)
-		if err != nil ||
-			media.Code != testCase.code ||
-			media.Owner.Username != testCase.username ||
-			media.Type != testCase.mediaType {
-			t.Error("Unexpected media info.")
+		if err != nil {
+			t.Error(err)
+		}
+		if media.Caption != testCase.caption {
+			t.Errorf("Media caption is incorrect.\nExpect %s, get %s.", media.Caption, testCase.caption)
+		}
+		if media.Code != testCase.code {
+			t.Errorf("Media code is incorrect.\nExpect %s, get %s.", media.Code, testCase.code)
+		}
+		if media.ID != testCase.id {
+			t.Errorf("Media id is incorrect.\nExpect %s, get %s.", media.ID, testCase.id)
+		}
+		if media.Type != testCase.mediaType {
+			t.Errorf("Media type is incorrect.\nExpect %s, get %s.", media.Type, testCase.mediaType)
+		}
+		if media.MediaURL != testCase.mediaURL {
+			t.Errorf("Media URL is incorrect.\nExpect %s, get %s.", media.MediaURL, testCase.mediaURL)
+		}
+		if media.MediaURL != testCase.mediaURL {
+			t.Errorf("Media's owner ID is incorrect.\nExpect %s, get %s.", media.Owner.ID, testCase.ownerID)
+		}
+		if media.Owner.ProfilePicURL != testCase.ownerProfilePicURL {
+			t.Errorf("Media's owner Profile Picture URL is incorrect.\nExpect %s, get %s.", media.Owner.ProfilePicURL, testCase.ownerProfilePicURL)
+		}
+		if media.Owner.Username != testCase.ownerUsername {
+			t.Errorf("Media's owner username is incorrect.\nExpect %s, get %s.", media.Owner.Username, testCase.ownerUsername)
+		}
+		if media.Owner.FullName != testCase.ownerFullName {
+			t.Errorf("Media's owner fullname is incorrect.\nExpect %s, get %s.", media.Owner.FullName, testCase.ownerFullName)
+		}
+		if media.LikesCount == 0 {
+			t.Error("Media has empty likes count.")
 		}
 	}
 }
