@@ -169,7 +169,7 @@ func Test_GetAllUserMedia_quantity(t *testing.T) {
 	for _, testCase := range []struct {
 		username string
 	}{
-		{"eminem"},
+		{"drdre"},
 		{"solidlsnake"},
 	} {
 		account, _ := GetAccountByUsername(testCase.username)
