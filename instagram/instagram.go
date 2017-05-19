@@ -21,11 +21,11 @@ import (
 // GetAccountByUsername try to find account by username.
 func GetAccountByUsername(username string) (Account, error) {
 	url := fmt.Sprintf(accountInfoURL, username)
-	info, err := getJSONFromURL(url)
+	data, err := getDataFromURL(url)
 	if err != nil {
 		return Account{}, err
 	}
-	account, ok := getFromAccountPage(info)
+	account, ok := getFromAccountPage(data)
 	if !ok {
 		return account, errors.New("Can't parse account")
 	}
