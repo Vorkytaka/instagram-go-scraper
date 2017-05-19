@@ -239,17 +239,13 @@ func GetTagTopMedia(tag string) ([9]Media, error) {
 // Return slice of Account with length of 0 or more.
 func SearchForUsers(username string) ([]Account, error) {
 	url := fmt.Sprintf(searchURL, username)
-	jsonBody, err := getJSONFromURL(url)
+	data, err := getDataFromURL(url)
 	if err != nil {
 		return nil, err
 	}
-	accounts := []Account{}
-	users, _ := jsonBody["users"].([]interface{})
-	for _, user := range users {
-		account, ok := getFromSearchPage(user.(map[string]interface{}))
-		if ok {
-			accounts = append(accounts, account)
-		}
+	accounts, err := getFromSearchPage(data)
+	if err != nil {
+		return nil, err
 	}
 	return accounts, nil
 }

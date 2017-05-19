@@ -72,24 +72,41 @@ func getFromAccountPage(data []byte) (Account, bool) {
 	return account, true
 }
 
-func getFromSearchPage(info map[string]interface{}) (Account, bool) {
-	user, ok := info["user"].(map[string]interface{})
-	if !ok {
-		return Account{}, false
+func getFromSearchPage(data []byte) ([]Account, error) {
+	var searchJson struct {
+		Users []struct {
+			Position int `json:"position"`
+			User struct {
+				Pk            string `json:"pk"`
+				Username      string `json:"username"`
+				FullName      string `json:"full_name"`
+				IsPrivate     bool `json:"is_private"`
+				ProfilePicURL string `json:"profile_pic_url"`
+				IsVerified    bool `json:"is_verified"`
+				FollowerCount int `json:"follower_count"`
+			} `json:"user"`
+		} `json:"users"`
 	}
 
-	account := Account{}
-	account.ID, _ = user["pk"].(string)
-	account.Username, _ = user["username"].(string)
-	account.FullName, _ = user["full_name"].(string)
-	account.Private, _ = user["is_private"].(bool)
-	account.verified, _ = user["is_verified"].(bool)
-	account.ProfilePicURL, _ = user["profile_pic_url"].(string)
-
-	followers, ok := user["follower_count"].(float64)
-	if ok {
-		account.Followers = uint32(followers)
+	err := json.Unmarshal(data, &searchJson)
+	if err != nil {
+		return nil, err
 	}
 
-	return account, true
+	accounts := []Account{}
+
+	for _, user := range searchJson.Users {
+		account := Account{}
+		account.ID = user.User.Pk
+		account.Username = user.User.Username
+		account.FullName = user.User.FullName
+		account.Private = user.User.IsPrivate
+		account.verified = user.User.IsVerified
+		account.ProfilePicURL = user.User.ProfilePicURL
+		account.Followers = uint32(user.User.FollowerCount)
+
+		accounts = append(accounts, account)
+	}
+
+	return accounts, nil
 }
