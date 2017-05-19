@@ -45,11 +45,11 @@ func GetMediaByURL(url string) (Media, error) {
 // then code of the media is 12376OtT5o.
 func GetMediaByCode(code string) (Media, error) {
 	url := fmt.Sprintf(mediaInfoURL, code)
-	info, err := getJSONFromURL(url)
+	data, err := getDataFromURL(url)
 	if err != nil {
 		return Media{}, err
 	}
-	media, ok := getFromMediaPage(info)
+	media, ok := getFromMediaPage(data)
 	if !ok {
 		return media, errors.New("Can't parse media")
 	}

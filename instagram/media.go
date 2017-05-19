@@ -10,6 +10,7 @@ package instagram
 
 import (
 	"strconv"
+	"encoding/json"
 )
 
 // TypeImage is a string that define image type for media.
@@ -40,57 +41,69 @@ func (m *Media) Update() {
 	}
 }
 
-func getFromMediaPage(info map[string]interface{}) (Media, bool) {
-	mediaInfo, ok := info["graphql"].(map[string]interface{})
-	if !ok {
-		return Media{}, false
+func getFromMediaPage(data []byte) (Media, bool) {
+	var mediaJson struct {
+		Graphql struct {
+			ShortcodeMedia struct {
+				Typename   string `json:"__typename"`
+				ID         string `json:"id"`
+				Shortcode  string `json:"shortcode"`
+				DisplayURL string `json:"display_url"`
+				VideoURL   string `json:"video_url"`
+				IsVideo    bool `json:"is_video"`
+				EdgeMediaToCaption struct {
+					Edges []struct {
+						Node struct {
+							Text string `json:"text"`
+						} `json:"node"`
+					} `json:"edges"`
+				} `json:"edge_media_to_caption"`
+				EdgeMediaToComment struct {
+					Count int `json:"count"`
+				} `json:"edge_media_to_comment"`
+				TakenAtTimestamp int `json:"taken_at_timestamp"`
+				EdgeMediaPreviewLike struct {
+					Count int `json:"count"`
+				} `json:"edge_media_preview_like"`
+				Owner struct {
+					ID            string `json:"id"`
+					ProfilePicURL string `json:"profile_pic_url"`
+					Username      string `json:"username"`
+					FullName      string `json:"full_name"`
+					IsPrivate     bool `json:"is_private"`
+				} `json:"owner"`
+				IsAd bool `json:"is_ad"`
+			} `json:"shortcode_media"`
+		} `json:"graphql"`
 	}
 
-	mediaInfo, ok = mediaInfo["shortcode_media"].(map[string]interface{})
-	if !ok {
+	err := json.Unmarshal(data, &mediaJson)
+	if err != nil {
 		return Media{}, false
 	}
 
 	media := Media{}
-	media.Code, _ = mediaInfo["shortcode"].(string)
-	media.ID = mediaInfo["id"].(string)
-	media.AD = mediaInfo["is_ad"].(bool)
+	media.Code = mediaJson.Graphql.ShortcodeMedia.Shortcode
+	media.ID = mediaJson.Graphql.ShortcodeMedia.ID
+	media.AD = mediaJson.Graphql.ShortcodeMedia.IsAd
+	media.Date = uint64(mediaJson.Graphql.ShortcodeMedia.TakenAtTimestamp)
+	media.CommentsCount = uint32(mediaJson.Graphql.ShortcodeMedia.EdgeMediaToComment.Count)
+	media.LikesCount = uint32(mediaJson.Graphql.ShortcodeMedia.EdgeMediaPreviewLike.Count)
+	media.Caption = mediaJson.Graphql.ShortcodeMedia.EdgeMediaToCaption.Edges[0].Node.Text
 
-	var fnum float64
-
-	comments, _ := mediaInfo["edge_media_to_comment"].(map[string]interface{})
-	fnum, _ = comments["count"].(float64)
-	media.CommentsCount = uint32(fnum)
-
-	fnum, _ = mediaInfo["taken_at_timestamp"].(float64)
-	media.Date = uint64(fnum)
-
-	likes, _ := mediaInfo["edge_media_preview_like"].(map[string]interface{})
-	fnum = likes["count"].(float64)
-	media.LikesCount = uint32(fnum)
-
-	caption, _ := mediaInfo["edge_media_to_caption"].(map[string]interface{})
-	caption2, _ := caption["edges"].([]interface{})
-	if len(caption2) > 0 {
-		caption, _ = caption2[0].(map[string]interface{})
-		caption, _ = caption["node"].(map[string]interface{})
-		media.Caption = caption["text"].(string)
-	}
-
-	if mediaInfo["is_video"].(bool) {
+	if mediaJson.Graphql.ShortcodeMedia.IsVideo {
 		media.Type = TypeVideo
-		media.MediaURL = mediaInfo["video_url"].(string)
+		media.MediaURL = mediaJson.Graphql.ShortcodeMedia.VideoURL
 	} else {
 		media.Type = TypeImage
-		media.MediaURL = mediaInfo["display_url"].(string)
+		media.MediaURL = mediaJson.Graphql.ShortcodeMedia.DisplayURL
 	}
 
-	owner, _ := mediaInfo["owner"].(map[string]interface{})
-	media.Owner.ID, _ = owner["id"].(string)
-	media.Owner.ProfilePicURL, _ = owner["profile_pic_url"].(string)
-	media.Owner.Username, _ = owner["username"].(string)
-	media.Owner.FullName, _ = owner["full_name"].(string)
-	media.Owner.Private, _ = owner["is_private"].(bool)
+	media.Owner.ID = mediaJson.Graphql.ShortcodeMedia.Owner.ID
+	media.Owner.ProfilePicURL = mediaJson.Graphql.ShortcodeMedia.Owner.ProfilePicURL
+	media.Owner.Username = mediaJson.Graphql.ShortcodeMedia.Owner.Username
+	media.Owner.FullName = mediaJson.Graphql.ShortcodeMedia.Owner.FullName
+	media.Owner.Private = mediaJson.Graphql.ShortcodeMedia.Owner.IsPrivate
 
 	return media, true
 }
