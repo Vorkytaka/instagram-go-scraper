@@ -29,21 +29,21 @@ type Account struct {
 func getFromAccountPage(data []byte) (Account, bool) {
 	var accountJson struct {
 		User struct {
-			Biography              string `json:"biography"`
-			ExternalURL            string `json:"external_url"`
+			Biography   string `json:"biography"`
+			ExternalURL string `json:"external_url"`
 			FollowedBy struct {
 				Count int `json:"count"`
 			} `json:"followed_by"`
 			Follows struct {
 				Count int `json:"count"`
 			} `json:"follows"`
-			FullName           string `json:"full_name"`
-			ID                 string `json:"id"`
-			IsPrivate          bool `json:"is_private"`
-			IsVerified         bool `json:"is_verified"`
-			ProfilePicURL      string `json:"profile_pic_url"`
-			ProfilePicURLHd    string `json:"profile_pic_url_hd"`
-			Username           string `json:"username"`
+			FullName        string `json:"full_name"`
+			ID              string `json:"id"`
+			IsPrivate       bool `json:"is_private"`
+			IsVerified      bool `json:"is_verified"`
+			ProfilePicURL   string `json:"profile_pic_url"`
+			ProfilePicURLHd string `json:"profile_pic_url_hd"`
+			Username        string `json:"username"`
 			Media struct {
 				Count int `json:"count"`
 			} `json:"media"`
