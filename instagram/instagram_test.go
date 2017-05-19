@@ -44,12 +44,6 @@ func Test_GetAccoutByUsername(t *testing.T) {
 		if account.Biography != testCase.biography {
 			t.Errorf("Account biography is incorrect.\nExpect %s, get %s.", account.Biography, testCase.biography)
 		}
-		if account.ProfilePicURL != testCase.profilePicURL {
-			t.Errorf("Account Profile Picture URL is incorrect.\nExpect %s, get %s.", account.ProfilePicURL, testCase.profilePicURL)
-		}
-		if account.ProfilePicURLhd != testCase.profilePicURLhd {
-			t.Errorf("Account HD Profile Picture URL is incorrect.\nExpect %s, get %s.", account.ProfilePicURLhd, testCase.profilePicURLhd)
-		}
 		if account.verified != testCase.verified {
 			t.Errorf("Account verified field is incorrect.\nExpect %t, get %t.", account.ProfilePicURLhd, testCase.profilePicURLhd)
 		}
@@ -123,14 +117,8 @@ func Test_GetMediaByCode(t *testing.T) {
 		if media.Type != testCase.mediaType {
 			t.Errorf("Media type is incorrect.\nExpect %s, get %s.", media.Type, testCase.mediaType)
 		}
-		if media.MediaURL != testCase.mediaURL {
-			t.Errorf("Media URL is incorrect.\nExpect %s, get %s.", media.MediaURL, testCase.mediaURL)
-		}
-		if media.MediaURL != testCase.mediaURL {
+		if media.Owner.ID != testCase.ownerID {
 			t.Errorf("Media's owner ID is incorrect.\nExpect %s, get %s.", media.Owner.ID, testCase.ownerID)
-		}
-		if media.Owner.ProfilePicURL != testCase.ownerProfilePicURL {
-			t.Errorf("Media's owner Profile Picture URL is incorrect.\nExpect %s, get %s.", media.Owner.ProfilePicURL, testCase.ownerProfilePicURL)
 		}
 		if media.Owner.Username != testCase.ownerUsername {
 			t.Errorf("Media's owner username is incorrect.\nExpect %s, get %s.", media.Owner.Username, testCase.ownerUsername)
