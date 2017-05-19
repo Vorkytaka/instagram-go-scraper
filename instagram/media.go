@@ -108,62 +108,71 @@ func getFromMediaPage(data []byte) (Media, bool) {
 	return media, true
 }
 
-func getFromAccountMediaList(info interface{}) (Media, bool) {
-	body, ok := info.(map[string]interface{})
-	if !ok {
+func getFromAccountMediaList(data []byte) (Media, bool) {
+	var mediaJson struct {
+		ID   string `json:"id"`
+		Code string `json:"code"`
+		User struct {
+			ID             string `json:"id"`
+			FullName       string `json:"full_name"`
+			ProfilePicture string `json:"profile_picture"`
+			Username       string `json:"username"`
+		} `json:"user"`
+		Images struct {
+			StandardResolution struct {
+				Width  int `json:"width"`
+				Height int `json:"height"`
+				URL    string `json:"url"`
+			} `json:"standard_resolution"`
+		} `json:"images"`
+		CreatedTime string `json:"created_time"`
+		Caption struct {
+			Text string `json:"text"`
+		} `json:"caption"`
+		Likes struct {
+			Count float64 `json:"count"`
+		} `json:"likes"`
+		Comments struct {
+			Count int `json:"count"`
+		} `json:"comments"`
+		Type string `json:"type"`
+		Videos struct {
+			StandardResolution struct {
+				Width  int `json:"width"`
+				Height int `json:"height"`
+				URL    string `json:"url"`
+			} `json:"standard_resolution"`
+		} `json:"videos"`
+	}
+
+	err := json.Unmarshal(data, &mediaJson)
+	if err != nil {
 		return Media{}, false
 	}
 
 	media := Media{}
-	media.Code, _ = body["code"].(string)
-	media.ID, _ = body["id"].(string)
-	media.Type, _ = body["type"].(string)
+	media.Code = mediaJson.Code
+	media.ID = mediaJson.ID
+	media.Type = mediaJson.Type
+	media.Caption = mediaJson.Caption.Text
+	media.LikesCount = uint32(mediaJson.Likes.Count)
+	media.CommentsCount = uint32(mediaJson.Comments.Count)
 
-	sdate := body["created_time"].(string)
-	media.Date, _ = strconv.ParseUint(sdate, 10, 64)
-
-	caption, ok := body["caption"].(map[string]interface{})
-	if ok {
-		media.Caption, _ = caption["text"].(string)
-	}
-
-	user, ok := body["user"].(map[string]interface{})
-	if ok {
-		media.Owner.Username, _ = user["username"].(string)
-		media.Owner.FullName, _ = user["full_name"].(string)
-		media.Owner.ID, _ = user["id"].(string)
-		media.Owner.ProfilePicURL, _ = user["profile_picture"].(string)
-	}
-
-	likes, ok := body["likes"].(map[string]interface{})
-	if ok {
-		fnum, _ := likes["count"].(float64)
-		media.LikesCount = uint32(fnum)
-	}
-
-	comments, ok := body["comments"].(map[string]interface{})
-	if ok {
-		fnum, _ := comments["count"].(float64)
-		media.CommentsCount = uint32(fnum)
+	date, err := strconv.ParseUint(mediaJson.CreatedTime, 10, 64)
+	if err == nil {
+		media.Date = date
 	}
 
 	if media.Type == TypeVideo {
-		videos, ok := body["videos"].(map[string]interface{})
-		if ok {
-			standardResolution, ok := videos["standard_resolution"].(map[string]interface{})
-			if ok {
-				media.MediaURL, _ = standardResolution["url"].(string)
-			}
-		}
+		media.MediaURL = mediaJson.Videos.StandardResolution.URL
 	} else {
-		images, ok := body["images"].(map[string]interface{})
-		if ok {
-			standardResolution, ok := images["standard_resolution"].(map[string]interface{})
-			if ok {
-				media.MediaURL, _ = standardResolution["url"].(string)
-			}
-		}
+		media.MediaURL = mediaJson.Images.StandardResolution.URL
 	}
+
+	media.Owner.Username = mediaJson.User.Username
+	media.Owner.FullName = mediaJson.User.FullName
+	media.Owner.ID = mediaJson.User.ID
+	media.Owner.ProfilePicURL = mediaJson.User.ProfilePicture
 
 	return media, true
 }

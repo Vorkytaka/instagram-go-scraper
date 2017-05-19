@@ -77,10 +77,13 @@ func GetAccountMedia(username string, limit uint16) ([]Media, error) {
 				return medias, nil
 			}
 			count++
-			media, ok := getFromAccountMediaList(item)
-			if ok {
-				medias = append(medias, media)
-				maxID = media.ID
+			itemData, err := json.Marshal(item)
+			if err == nil {
+				media, ok := getFromAccountMediaList(itemData)
+				if ok {
+					medias = append(medias, media)
+					maxID = media.ID
+				}
 			}
 		}
 	}

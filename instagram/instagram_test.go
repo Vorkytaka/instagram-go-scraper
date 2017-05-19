@@ -159,7 +159,11 @@ func Test_GetUserMedia_quantity(t *testing.T) {
 		{"solidlsnake", 999, count},
 	} {
 		medias, err := GetAccountMedia(testCase.username, testCase.quantity)
-		if err != nil || len(medias) != testCase.expected {
+		if err != nil {
+			t.Error(err)
+		}
+
+		if len(medias) != testCase.expected {
 			t.Error("Wrong numbers of media.")
 		}
 	}
