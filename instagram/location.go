@@ -8,6 +8,8 @@
 
 package instagram
 
+import "encoding/json"
+
 // A Location describes an Instagram location info.
 type Location struct {
 	ID         string
@@ -18,19 +20,30 @@ type Location struct {
 	Slug       string
 }
 
-func getFromLocationPage(info map[string]interface{}) (Location, bool) {
-	json, ok := info["location"].(map[string]interface{})
-	if !ok {
+func getFromLocationPage(data []byte) (Location, bool) {
+	var locationJson struct {
+		Location struct {
+			ID            string `json:"id"`
+			Name          string `json:"name"`
+			HasPublicPage bool `json:"has_public_page"`
+			Lat           float64 `json:"lat"`
+			Lng           float64 `json:"lng"`
+			Slug          string `json:"slug"`
+		} `json:"location"`
+	}
+
+	err := json.Unmarshal(data, &locationJson)
+	if err != nil {
 		return Location{}, false
 	}
 
 	location := Location{}
-	location.ID, _ = json["id"].(string)
-	location.Name, _ = json["name"].(string)
-	location.PublicPage, _ = json["has_public_page"].(bool)
-	location.Lat, _ = json["lat"].(float64)
-	location.Lng, _ = json["lng"].(float64)
-	location.Slug, _ = json["slug"].(string)
+	location.ID = locationJson.Location.ID
+	location.Name = locationJson.Location.Name
+	location.PublicPage = locationJson.Location.HasPublicPage
+	location.Lat = locationJson.Location.Lat
+	location.Lng = locationJson.Location.Lng
+	location.Slug = locationJson.Location.Slug
 
 	return location, true
 }

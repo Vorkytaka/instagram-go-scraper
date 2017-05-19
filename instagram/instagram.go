@@ -169,12 +169,12 @@ func GetLocationTopMedia(id string) ([9]Media, error) {
 // The id is a facebook location id.
 func GetLocationByID(id string) (Location, error) {
 	url := fmt.Sprintf(locationURL, id, "")
-	jsonBody, err := getJSONFromURL(url)
+	data, err := getDataFromURL(url)
 	if err != nil {
 		return Location{}, err
 	}
 
-	location, ok := getFromLocationPage(jsonBody)
+	location, ok := getFromLocationPage(data)
 	if !ok {
 		return Location{}, errors.New("Can't parse location")
 	}
