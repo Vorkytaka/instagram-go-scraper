@@ -27,7 +27,7 @@ type Account struct {
 }
 
 func getFromAccountPage(data []byte) (Account, bool) {
-	var accountJson struct {
+	var accountJSON struct {
 		User struct {
 			Biography   string `json:"biography"`
 			ExternalURL string `json:"external_url"`
@@ -50,30 +50,30 @@ func getFromAccountPage(data []byte) (Account, bool) {
 		} `json:"user"`
 	}
 
-	err := json.Unmarshal(data, &accountJson)
+	err := json.Unmarshal(data, &accountJSON)
 	if err != nil {
 		return Account{}, false
 	}
 
 	account := Account{}
-	account.Biography = accountJson.User.Biography
-	account.ExternalURL = accountJson.User.ExternalURL
-	account.FullName = accountJson.User.FullName
-	account.ID = accountJson.User.ID
-	account.Private = accountJson.User.IsPrivate
-	account.verified = accountJson.User.IsVerified
-	account.ProfilePicURL = accountJson.User.ProfilePicURL
-	account.ProfilePicURLhd = accountJson.User.ProfilePicURLHd
-	account.Username = accountJson.User.Username
-	account.Followers = uint32(accountJson.User.FollowedBy.Count)
-	account.Follows = uint32(accountJson.User.Follows.Count)
-	account.MediaCount = uint32(accountJson.User.Media.Count)
+	account.Biography = accountJSON.User.Biography
+	account.ExternalURL = accountJSON.User.ExternalURL
+	account.FullName = accountJSON.User.FullName
+	account.ID = accountJSON.User.ID
+	account.Private = accountJSON.User.IsPrivate
+	account.verified = accountJSON.User.IsVerified
+	account.ProfilePicURL = accountJSON.User.ProfilePicURL
+	account.ProfilePicURLhd = accountJSON.User.ProfilePicURLHd
+	account.Username = accountJSON.User.Username
+	account.Followers = uint32(accountJSON.User.FollowedBy.Count)
+	account.Follows = uint32(accountJSON.User.Follows.Count)
+	account.MediaCount = uint32(accountJSON.User.Media.Count)
 
 	return account, true
 }
 
 func getFromSearchPage(data []byte) ([]Account, error) {
-	var searchJson struct {
+	var searchJSON struct {
 		Users []struct {
 			Position int `json:"position"`
 			User struct {
@@ -88,14 +88,14 @@ func getFromSearchPage(data []byte) ([]Account, error) {
 		} `json:"users"`
 	}
 
-	err := json.Unmarshal(data, &searchJson)
+	err := json.Unmarshal(data, &searchJSON)
 	if err != nil {
 		return nil, err
 	}
 
 	accounts := []Account{}
 
-	for _, user := range searchJson.Users {
+	for _, user := range searchJSON.Users {
 		account := Account{}
 		account.ID = user.User.Pk
 		account.Username = user.User.Username

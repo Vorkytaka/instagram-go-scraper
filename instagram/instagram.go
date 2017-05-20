@@ -129,9 +129,12 @@ func GetLocationMedia(id string, limit uint16) ([]Media, error) {
 				return medias, nil
 			}
 			count++
-			media, ok := getFromSearchMediaList(node)
-			if ok {
-				medias = append(medias, media)
+			nodeData, err := json.Marshal(node)
+			if err == nil {
+				media, ok := getFromSearchMediaList(nodeData)
+				if ok {
+					medias = append(medias, media)
+				}
 			}
 		}
 
@@ -157,9 +160,12 @@ func GetLocationTopMedia(id string) ([9]Media, error) {
 	medias := [9]Media{}
 	nodes, _ := jsonBody["nodes"].([]interface{})
 	for i, node := range nodes {
-		media, ok := getFromSearchMediaList(node)
-		if ok {
-			medias[i] = media
+		nodeData, err := json.Marshal(node)
+		if err == nil {
+			media, ok := getFromSearchMediaList(nodeData)
+			if ok {
+				medias[i] = media
+			}
 		}
 	}
 	return medias, nil
@@ -203,9 +209,12 @@ func GetTagMedia(tag string, quantity uint16) ([]Media, error) {
 				return medias, nil
 			}
 			count++
-			media, ok := getFromSearchMediaList(node)
-			if ok {
-				medias = append(medias, media)
+			nodeData, err := json.Marshal(node)
+			if err == nil {
+				media, ok := getFromSearchMediaList(nodeData)
+				if ok {
+					medias = append(medias, media)
+				}
 			}
 		}
 
@@ -230,9 +239,12 @@ func GetTagTopMedia(tag string) ([9]Media, error) {
 	medias := [9]Media{}
 	nodes, _ := jsonBody["nodes"].([]interface{})
 	for i, node := range nodes {
-		media, ok := getFromSearchMediaList(node)
-		if ok {
-			medias[i] = media
+		nodeData, err := json.Marshal(node)
+		if err == nil {
+			media, ok := getFromSearchMediaList(nodeData)
+			if ok {
+				medias[i] = media
+			}
 		}
 	}
 	return medias, nil
@@ -254,19 +266,13 @@ func SearchForUsers(username string) ([]Account, error) {
 }
 
 func getJSONFromURL(url string) (map[string]interface{}, error) {
-	resp, err := http.Get(url)
-	if err != nil || resp.StatusCode == 404 {
-		return nil, err
-	}
-	defer resp.Body.Close()
-
-	body, err := ioutil.ReadAll(resp.Body)
+	data, err := getDataFromURL(url)
 	if err != nil {
 		return nil, err
 	}
 
 	var jsonBody map[string]interface{}
-	err = json.Unmarshal(body, &jsonBody)
+	err = json.Unmarshal(data, &jsonBody)
 	if err != nil {
 		return nil, err
 	}

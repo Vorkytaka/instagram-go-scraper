@@ -42,7 +42,7 @@ func (m *Media) Update() {
 }
 
 func getFromMediaPage(data []byte) (Media, bool) {
-	var mediaJson struct {
+	var mediaJSON struct {
 		Graphql struct {
 			ShortcodeMedia struct {
 				Typename   string `json:"__typename"`
@@ -77,39 +77,39 @@ func getFromMediaPage(data []byte) (Media, bool) {
 		} `json:"graphql"`
 	}
 
-	err := json.Unmarshal(data, &mediaJson)
+	err := json.Unmarshal(data, &mediaJSON)
 	if err != nil {
 		return Media{}, false
 	}
 
 	media := Media{}
-	media.Code = mediaJson.Graphql.ShortcodeMedia.Shortcode
-	media.ID = mediaJson.Graphql.ShortcodeMedia.ID
-	media.AD = mediaJson.Graphql.ShortcodeMedia.IsAd
-	media.Date = uint64(mediaJson.Graphql.ShortcodeMedia.TakenAtTimestamp)
-	media.CommentsCount = uint32(mediaJson.Graphql.ShortcodeMedia.EdgeMediaToComment.Count)
-	media.LikesCount = uint32(mediaJson.Graphql.ShortcodeMedia.EdgeMediaPreviewLike.Count)
-	media.Caption = mediaJson.Graphql.ShortcodeMedia.EdgeMediaToCaption.Edges[0].Node.Text
+	media.Code = mediaJSON.Graphql.ShortcodeMedia.Shortcode
+	media.ID = mediaJSON.Graphql.ShortcodeMedia.ID
+	media.AD = mediaJSON.Graphql.ShortcodeMedia.IsAd
+	media.Date = uint64(mediaJSON.Graphql.ShortcodeMedia.TakenAtTimestamp)
+	media.CommentsCount = uint32(mediaJSON.Graphql.ShortcodeMedia.EdgeMediaToComment.Count)
+	media.LikesCount = uint32(mediaJSON.Graphql.ShortcodeMedia.EdgeMediaPreviewLike.Count)
+	media.Caption = mediaJSON.Graphql.ShortcodeMedia.EdgeMediaToCaption.Edges[0].Node.Text
 
-	if mediaJson.Graphql.ShortcodeMedia.IsVideo {
+	if mediaJSON.Graphql.ShortcodeMedia.IsVideo {
 		media.Type = TypeVideo
-		media.MediaURL = mediaJson.Graphql.ShortcodeMedia.VideoURL
+		media.MediaURL = mediaJSON.Graphql.ShortcodeMedia.VideoURL
 	} else {
 		media.Type = TypeImage
-		media.MediaURL = mediaJson.Graphql.ShortcodeMedia.DisplayURL
+		media.MediaURL = mediaJSON.Graphql.ShortcodeMedia.DisplayURL
 	}
 
-	media.Owner.ID = mediaJson.Graphql.ShortcodeMedia.Owner.ID
-	media.Owner.ProfilePicURL = mediaJson.Graphql.ShortcodeMedia.Owner.ProfilePicURL
-	media.Owner.Username = mediaJson.Graphql.ShortcodeMedia.Owner.Username
-	media.Owner.FullName = mediaJson.Graphql.ShortcodeMedia.Owner.FullName
-	media.Owner.Private = mediaJson.Graphql.ShortcodeMedia.Owner.IsPrivate
+	media.Owner.ID = mediaJSON.Graphql.ShortcodeMedia.Owner.ID
+	media.Owner.ProfilePicURL = mediaJSON.Graphql.ShortcodeMedia.Owner.ProfilePicURL
+	media.Owner.Username = mediaJSON.Graphql.ShortcodeMedia.Owner.Username
+	media.Owner.FullName = mediaJSON.Graphql.ShortcodeMedia.Owner.FullName
+	media.Owner.Private = mediaJSON.Graphql.ShortcodeMedia.Owner.IsPrivate
 
 	return media, true
 }
 
 func getFromAccountMediaList(data []byte) (Media, bool) {
-	var mediaJson struct {
+	var mediaJSON struct {
 		ID   string `json:"id"`
 		Code string `json:"code"`
 		User struct {
@@ -133,7 +133,7 @@ func getFromAccountMediaList(data []byte) (Media, bool) {
 			Count float64 `json:"count"`
 		} `json:"likes"`
 		Comments struct {
-			Count int `json:"count"`
+			Count float64 `json:"count"`
 		} `json:"comments"`
 		Type string `json:"type"`
 		Videos struct {
@@ -145,69 +145,75 @@ func getFromAccountMediaList(data []byte) (Media, bool) {
 		} `json:"videos"`
 	}
 
-	err := json.Unmarshal(data, &mediaJson)
+	err := json.Unmarshal(data, &mediaJSON)
 	if err != nil {
 		return Media{}, false
 	}
 
 	media := Media{}
-	media.Code = mediaJson.Code
-	media.ID = mediaJson.ID
-	media.Type = mediaJson.Type
-	media.Caption = mediaJson.Caption.Text
-	media.LikesCount = uint32(mediaJson.Likes.Count)
-	media.CommentsCount = uint32(mediaJson.Comments.Count)
+	media.Code = mediaJSON.Code
+	media.ID = mediaJSON.ID
+	media.Type = mediaJSON.Type
+	media.Caption = mediaJSON.Caption.Text
+	media.LikesCount = uint32(mediaJSON.Likes.Count)
+	media.CommentsCount = uint32(mediaJSON.Comments.Count)
 
-	date, err := strconv.ParseUint(mediaJson.CreatedTime, 10, 64)
+	date, err := strconv.ParseUint(mediaJSON.CreatedTime, 10, 64)
 	if err == nil {
 		media.Date = date
 	}
 
 	if media.Type == TypeVideo {
-		media.MediaURL = mediaJson.Videos.StandardResolution.URL
+		media.MediaURL = mediaJSON.Videos.StandardResolution.URL
 	} else {
-		media.MediaURL = mediaJson.Images.StandardResolution.URL
+		media.MediaURL = mediaJSON.Images.StandardResolution.URL
 	}
 
-	media.Owner.Username = mediaJson.User.Username
-	media.Owner.FullName = mediaJson.User.FullName
-	media.Owner.ID = mediaJson.User.ID
-	media.Owner.ProfilePicURL = mediaJson.User.ProfilePicture
+	media.Owner.Username = mediaJSON.User.Username
+	media.Owner.FullName = mediaJSON.User.FullName
+	media.Owner.ID = mediaJSON.User.ID
+	media.Owner.ProfilePicURL = mediaJSON.User.ProfilePicture
 
 	return media, true
 }
 
-func getFromSearchMediaList(info interface{}) (Media, bool) {
-	body, ok := info.(map[string]interface{})
-	if !ok {
+func getFromSearchMediaList(data []byte) (Media, bool) {
+	var mediaJSON struct {
+		CommentsDisabled bool `json:"comments_disabled"`
+		ID               string `json:"id"`
+		Owner struct {
+			ID string `json:"id"`
+		} `json:"owner"`
+		ThumbnailSrc string `json:"thumbnail_src"`
+		IsVideo      bool `json:"is_video"`
+		Code         string `json:"code"`
+		Date         float64 `json:"date"`
+		DisplaySrc   string `json:"display_src"`
+		Caption      string `json:"caption"`
+		Comments struct {
+			Count float64 `json:"count"`
+		} `json:"comments"`
+		Likes struct {
+			Count float64 `json:"count"`
+		} `json:"likes"`
+	}
+
+	err := json.Unmarshal(data, &mediaJSON)
+	if err != nil {
 		return Media{}, false
 	}
 
 	media := Media{}
-	media.ID, _ = body["id"].(string)
-	media.Code, _ = body["code"].(string)
-	media.MediaURL, _ = body["thumbnail_src"].(string)
-	media.Caption, _ = body["caption"].(string)
+	media.ID = mediaJSON.ID
+	media.Code = mediaJSON.Code
+	media.MediaURL = mediaJSON.DisplaySrc
+	media.Caption = mediaJSON.Caption
+	media.Date = uint64(mediaJSON.Date)
+	media.LikesCount = uint32(mediaJSON.Likes.Count)
+	media.CommentsCount = uint32(mediaJSON.Comments.Count)
+	media.Owner.ID = mediaJSON.Owner.ID
 
-	fnum, _ := body["date"].(float64)
-	media.Date = uint64(fnum)
-
-	likes, ok := body["likes"].(map[string]interface{})
-	if ok {
-		fnum, _ := likes["count"].(float64)
-		media.LikesCount = uint32(fnum)
-	}
-
-	comments, ok := body["comments"].(map[string]interface{})
-	if ok {
-		fnum, _ := comments["count"].(float64)
-		media.CommentsCount = uint32(fnum)
-	}
-
-	owner, _ := body["owner"].(map[string]interface{})
-	media.Owner.ID, _ = owner["id"].(string)
-
-	if body["is_video"].(bool) {
+	if mediaJSON.IsVideo {
 		media.Type = TypeVideo
 	} else {
 		media.Type = TypeImage
