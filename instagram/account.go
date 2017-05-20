@@ -8,76 +8,105 @@
 
 package instagram
 
+import "encoding/json"
+
 // An Account describes an Instagram account info.
 type Account struct {
-	Biography         string
-	ConnectedFacebook bool
-	ExternalURL       string
-	Followers         uint32
-	Follows           uint32
-	FullName          string
-	ID                string
-	Private           bool
-	verified          bool
-	MediaCount        uint32
-	ProfilePicURL     string
-	ProfilePicURLhd   string
-	Username          string
+	Biography       string
+	ExternalURL     string
+	Followers       uint32
+	Follows         uint32
+	FullName        string
+	ID              string
+	Private         bool
+	Verified        bool
+	MediaCount      uint32
+	ProfilePicURL   string
+	ProfilePicURLhd string
+	Username        string
 }
 
-func getFromAccountPage(info map[string]interface{}) (Account, bool) {
-	user, ok := info["user"].(map[string]interface{})
-	if !ok {
+func getFromAccountPage(data []byte) (Account, bool) {
+	var accountJSON struct {
+		User struct {
+			Biography   string `json:"biography"`
+			ExternalURL string `json:"external_url"`
+			FollowedBy struct {
+				Count int `json:"count"`
+			} `json:"followed_by"`
+			Follows struct {
+				Count int `json:"count"`
+			} `json:"follows"`
+			FullName        string `json:"full_name"`
+			ID              string `json:"id"`
+			IsPrivate       bool `json:"is_private"`
+			IsVerified      bool `json:"is_verified"`
+			ProfilePicURL   string `json:"profile_pic_url"`
+			ProfilePicURLHd string `json:"profile_pic_url_hd"`
+			Username        string `json:"username"`
+			Media struct {
+				Count int `json:"count"`
+			} `json:"media"`
+		} `json:"user"`
+	}
+
+	err := json.Unmarshal(data, &accountJSON)
+	if err != nil {
 		return Account{}, false
 	}
 
 	account := Account{}
-	account.Biography, _ = user["biography"].(string)
-	account.ConnectedFacebook, _ = user["connected_fb_page"].(bool)
-	account.ExternalURL, _ = user["external_url"].(string)
-	account.FullName, _ = user["full_name"].(string)
-	account.ID, _ = user["id"].(string)
-	account.Private, _ = user["is_private"].(bool)
-	account.verified, _ = user["is_verified"].(bool)
-	account.ProfilePicURL, _ = user["profile_pic_url"].(string)
-	account.ProfilePicURLhd, _ = user["profile_pic_url_hd"].(string)
-	account.Username, _ = user["username"].(string)
-
-	var fnum float64
-
-	followedBy := user["followed_by"].(map[string]interface{})
-	fnum, _ = followedBy["count"].(float64)
-	account.Followers = uint32(fnum)
-
-	follows := user["follows"].(map[string]interface{})
-	fnum, _ = follows["count"].(float64)
-	account.Follows = uint32(fnum)
-
-	media := user["media"].(map[string]interface{})
-	fnum, _ = media["count"].(float64)
-	account.MediaCount = uint32(fnum)
+	account.Biography = accountJSON.User.Biography
+	account.ExternalURL = accountJSON.User.ExternalURL
+	account.FullName = accountJSON.User.FullName
+	account.ID = accountJSON.User.ID
+	account.Private = accountJSON.User.IsPrivate
+	account.Verified = accountJSON.User.IsVerified
+	account.ProfilePicURL = accountJSON.User.ProfilePicURL
+	account.ProfilePicURLhd = accountJSON.User.ProfilePicURLHd
+	account.Username = accountJSON.User.Username
+	account.Followers = uint32(accountJSON.User.FollowedBy.Count)
+	account.Follows = uint32(accountJSON.User.Follows.Count)
+	account.MediaCount = uint32(accountJSON.User.Media.Count)
 
 	return account, true
 }
 
-func getFromSearchPage(info map[string]interface{}) (Account, bool) {
-	user, ok := info["user"].(map[string]interface{})
-	if !ok {
-		return Account{}, false
+func getFromSearchPage(data []byte) ([]Account, error) {
+	var searchJSON struct {
+		Users []struct {
+			Position int `json:"position"`
+			User struct {
+				Pk            string `json:"pk"`
+				Username      string `json:"username"`
+				FullName      string `json:"full_name"`
+				IsPrivate     bool `json:"is_private"`
+				ProfilePicURL string `json:"profile_pic_url"`
+				IsVerified    bool `json:"is_verified"`
+				FollowerCount int `json:"follower_count"`
+			} `json:"user"`
+		} `json:"users"`
 	}
 
-	account := Account{}
-	account.ID, _ = user["pk"].(string)
-	account.Username, _ = user["username"].(string)
-	account.FullName, _ = user["full_name"].(string)
-	account.Private, _ = user["is_private"].(bool)
-	account.verified, _ = user["is_verified"].(bool)
-	account.ProfilePicURL, _ = user["profile_pic_url"].(string)
-
-	followers, ok := user["follower_count"].(float64)
-	if ok {
-		account.Followers = uint32(followers)
+	err := json.Unmarshal(data, &searchJSON)
+	if err != nil {
+		return nil, err
 	}
 
-	return account, true
+	accounts := []Account{}
+
+	for _, user := range searchJSON.Users {
+		account := Account{}
+		account.ID = user.User.Pk
+		account.Username = user.User.Username
+		account.FullName = user.User.FullName
+		account.Private = user.User.IsPrivate
+		account.Verified = user.User.IsVerified
+		account.ProfilePicURL = user.User.ProfilePicURL
+		account.Followers = uint32(user.User.FollowerCount)
+
+		accounts = append(accounts, account)
+	}
+
+	return accounts, nil
 }

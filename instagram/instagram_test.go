@@ -4,25 +4,57 @@ import (
 	"testing"
 )
 
-func Test_GetAccoutByUsername_exist(t *testing.T) {
+func Test_GetAccoutByUsername(t *testing.T) {
 	for _, testCase := range []struct {
-		username, fullName, id string
+		username, fullname, id, biography, profilePicURL, profilePicURLhd string
+		verified                                                          bool
 	}{
-		{"instagram", "Instagram", "25025320"},
-		{"solidlsnake", "Konstantin", "248188406"},
+		{
+			"instagram",
+			"Instagram",
+			"25025320",
+			"Discovering — and telling — stories from around the world. Curated by Instagram’s community team.",
+			"https://scontent-arn2-1.cdninstagram.com/t51.2885-19/s150x150/14719833_310540259320655_1605122788543168512_a.jpg",
+			"https://scontent-arn2-1.cdninstagram.com/t51.2885-19/s320x320/14719833_310540259320655_1605122788543168512_a.jpg",
+			true,
+		},
+		{
+			"solidlsnake",
+			"Konstantin",
+			"248188406",
+			"",
+			"https://scontent-arn2-1.cdninstagram.com/t51.2885-19/s150x150/17125816_320904131658190_1521093063361953792_a.jpg",
+			"https://scontent-arn2-1.cdninstagram.com/t51.2885-19/s320x320/17125816_320904131658190_1521093063361953792_a.jpg",
+			false,
+		},
 	} {
 		account, err := GetAccountByUsername(testCase.username)
-		if err != nil ||
-			account.Username != testCase.username ||
-			account.FullName != testCase.fullName ||
-			account.ID != testCase.id {
-			t.Errorf(
-				"Unexpected account info. Expect full name %s, but get %s. Expect id %s, but get %s",
-				testCase.fullName,
-				testCase.id,
-				account.FullName,
-				account.ID,
-			)
+		if err != nil {
+			t.Error(err)
+		}
+		if account.Username != testCase.username {
+			t.Errorf("Account username is incorrect.\nExpect %s, get %s.", account.Username, testCase.username)
+		}
+		if account.FullName != testCase.fullname {
+			t.Errorf("Account fullname is incorrect.\nExpect %s, get %s.", account.FullName, testCase.fullname)
+		}
+		if account.ID != testCase.id {
+			t.Errorf("Account id is incorrect.\nExpect %s, get %s.", account.ID, testCase.id)
+		}
+		if account.Biography != testCase.biography {
+			t.Errorf("Account biography is incorrect.\nExpect %s, get %s.", account.Biography, testCase.biography)
+		}
+		if account.Verified != testCase.verified {
+			t.Errorf("Account verified field is incorrect.\nExpect %t, get %t.", account.ProfilePicURLhd, testCase.profilePicURLhd)
+		}
+		if account.MediaCount == 0 {
+			t.Error("Account has empty media count.")
+		}
+		if account.Followers == 0 {
+			t.Error("Account has empty followers count.")
+		}
+		if account.Follows == 0 {
+			t.Error("Account has empty following count.")
 		}
 	}
 }
@@ -41,60 +73,61 @@ func Test_GetAccoutByUsername_notExist(t *testing.T) {
 	}
 }
 
-func Test_GetMediaByUrl(t *testing.T) {
-	for _, testCase := range []struct {
-		url, code, username, mediaType string
-	}{
-		{
-			"https://www.instagram.com/p/ceiqEstT6r/",
-			"ceiqEstT6r",
-			"solidlsnake",
-			"image",
-		},
-		{
-			"https://www.instagram.com/p/12376OtT5o/",
-			"12376OtT5o",
-			"solidlsnake",
-			"video",
-		},
-		{
-			"https://www.instagram.com/p/BJc3ORygIfa/",
-			"BJc3ORygIfa",
-			"solidlsnake",
-			"image",
-		},
-	} {
-		media, err := GetMediaByURL(testCase.url)
-		if err != nil ||
-			media.Code != testCase.code ||
-			media.Owner.Username != testCase.username ||
-			media.Type != testCase.mediaType {
-			t.Error("Unexpected media info.")
-		}
-	}
-}
-
 func Test_GetMediaByCode(t *testing.T) {
 	for _, testCase := range []struct {
-		code, username, mediaType string
+		caption, code, id, mediaType, mediaURL                    string
+		ownerID, ownerProfilePicURL, ownerUsername, ownerFullName string
 	}{
 		{
+			"Дружище, есть че?",
 			"ceiqEstT6r",
-			"solidlsnake",
+			"512999832411258539",
 			"image",
+			"https://scontent-arn2-1.cdninstagram.com/t51.2885-15/e15/11325321_112286479105192_62945882_n.jpg",
+			"248188406",
+			"https://scontent-arn2-1.cdninstagram.com/t51.2885-19/s150x150/17125816_320904131658190_1521093063361953792_a.jpg",
+			"solidlsnake",
+			"Konstantin",
 		},
 		{
+			"Зов джунглей",
 			"12376OtT5o",
-			"solidlsnake",
+			"970208779275943528",
 			"video",
+			"https://scontent-arn2-1.cdninstagram.com/t50.2886-16/11175992_1616299585273258_350800542_n.mp4",
+			"248188406",
+			"https://scontent-arn2-1.cdninstagram.com/t51.2885-19/s150x150/17125816_320904131658190_1521093063361953792_a.jpg",
+			"solidlsnake",
+			"Konstantin",
 		},
 	} {
 		media, err := GetMediaByCode(testCase.code)
-		if err != nil ||
-			media.Code != testCase.code ||
-			media.Owner.Username != testCase.username ||
-			media.Type != testCase.mediaType {
-			t.Error("Unexpected media info.")
+		if err != nil {
+			t.Error(err)
+		}
+		if media.Caption != testCase.caption {
+			t.Errorf("Media caption is incorrect.\nExpect %s, get %s.", media.Caption, testCase.caption)
+		}
+		if media.Code != testCase.code {
+			t.Errorf("Media code is incorrect.\nExpect %s, get %s.", media.Code, testCase.code)
+		}
+		if media.ID != testCase.id {
+			t.Errorf("Media id is incorrect.\nExpect %s, get %s.", media.ID, testCase.id)
+		}
+		if media.Type != testCase.mediaType {
+			t.Errorf("Media type is incorrect.\nExpect %s, get %s.", media.Type, testCase.mediaType)
+		}
+		if media.Owner.ID != testCase.ownerID {
+			t.Errorf("Media's owner ID is incorrect.\nExpect %s, get %s.", media.Owner.ID, testCase.ownerID)
+		}
+		if media.Owner.Username != testCase.ownerUsername {
+			t.Errorf("Media's owner username is incorrect.\nExpect %s, get %s.", media.Owner.Username, testCase.ownerUsername)
+		}
+		if media.Owner.FullName != testCase.ownerFullName {
+			t.Errorf("Media's owner fullname is incorrect.\nExpect %s, get %s.", media.Owner.FullName, testCase.ownerFullName)
+		}
+		if media.LikesCount == 0 {
+			t.Error("Media has empty likes count.")
 		}
 	}
 }
@@ -126,7 +159,11 @@ func Test_GetUserMedia_quantity(t *testing.T) {
 		{"solidlsnake", 999, count},
 	} {
 		medias, err := GetAccountMedia(testCase.username, testCase.quantity)
-		if err != nil || len(medias) != testCase.expected {
+		if err != nil {
+			t.Error(err)
+		}
+
+		if len(medias) != testCase.expected {
 			t.Error("Wrong numbers of media.")
 		}
 	}
@@ -136,7 +173,7 @@ func Test_GetAllUserMedia_quantity(t *testing.T) {
 	for _, testCase := range []struct {
 		username string
 	}{
-		{"eminem"},
+		{"drdre"},
 		{"solidlsnake"},
 	} {
 		account, _ := GetAccountByUsername(testCase.username)
@@ -145,6 +182,38 @@ func Test_GetAllUserMedia_quantity(t *testing.T) {
 		if err != nil || len(medias) != expected {
 			t.Error("Wrong numbers of media.")
 		}
+	}
+}
+
+func Test_getFromAccountMediaList(t *testing.T) {
+	media, err := GetAllAccountMedia("solidlsnake")
+	lastPos := len(media) - 1
+	if err != nil {
+		t.Error(err)
+	}
+	if media[lastPos].Caption != "Всем добра и расслабона." {
+		t.Errorf("Media caption is incorrect.")
+	}
+	if media[lastPos].Code != "YgBPkNtTz_" {
+		t.Errorf("Media code is incorrect.")
+	}
+	if media[lastPos].ID != "441358231205657855_248188406" {
+		t.Errorf("Media id is incorrect.")
+	}
+	if media[lastPos].Type != "image" {
+		t.Errorf("Media type is incorrect.")
+	}
+	if media[lastPos].Owner.Username != "solidlsnake" {
+		t.Errorf("Media's owner username is incorrect.")
+	}
+	if media[lastPos].Owner.FullName != "Konstantin" {
+		t.Errorf("Media's owner fullname is incorrect.")
+	}
+	if media[lastPos].LikesCount == 0 {
+		t.Error("Media has empty likes count.")
+	}
+	if media[lastPos].CommentsCount == 0 {
+		t.Error("Media has empty comments count.")
 	}
 }
 
@@ -186,7 +255,7 @@ func Test_GetLocationById(t *testing.T) {
 		location, err := GetLocationByID(testCase.locationID)
 		if err != nil ||
 			location.Slug != testCase.slug {
-			t.Errorf("Wrong location info. Expect slug %s, but get %s.", testCase.slug, location.Slug )
+			t.Errorf("Wrong location info. Expect slug %s, but get %s.", testCase.slug, location.Slug)
 		}
 	}
 }
@@ -221,14 +290,50 @@ func Test_GetTagTopMedia_quantity(t *testing.T) {
 
 func Test_SearchForUsers(t *testing.T) {
 	for _, testCase := range []struct {
-		username, id string
+		username, id, fullname string
 	}{
-		{"solidlsnake", "248188406" },
+		{
+			"solidlsnake",
+			"248188406",
+			"Konstantin",
+		},
 	} {
 		accounts, err := SearchForUsers(testCase.username)
-		if err != nil ||
-			accounts[0].ID != testCase.id {
-			t.Error("Wrong account information.")
+		if err != nil {
+			t.Error(err)
+		}
+		if accounts[0].ID != testCase.id {
+			t.Error("Incorrect account ID.")
+		}
+		if accounts[0].FullName != testCase.fullname {
+			t.Error("Incorrect account fullname.")
+		}
+		if accounts[0].Private {
+			t.Error("Incorrect account private field.")
+		}
+		if accounts[0].Verified {
+			t.Error("Incorrect account verified field.")
+		}
+		if accounts[0].Followers == 0 {
+			t.Error("Incorrect account followers count.")
+		}
+	}
+}
+
+func Test_MediaUpdateTest(t *testing.T) {
+	for _, testCase := range []struct {
+		code string
+	}{
+		{"BNhikAbg5Ph" },
+		{"BNUAZOPgdsH" },
+	} {
+		media := Media{}
+		media.Code = testCase.code
+		media.Update()
+		if len(media.Caption) == 0 ||
+			media.Date == 0 || len(media.ID) == 0 || media.LikesCount == 0 ||
+			len(media.Type) == 0 || len(media.MediaURL) == 0 {
+			t.Error("Media wasn't update")
 		}
 	}
 }
