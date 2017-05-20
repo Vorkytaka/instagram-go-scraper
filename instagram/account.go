@@ -19,7 +19,7 @@ type Account struct {
 	FullName        string
 	ID              string
 	Private         bool
-	verified        bool
+	Verified        bool
 	MediaCount      uint32
 	ProfilePicURL   string
 	ProfilePicURLhd string
@@ -61,7 +61,7 @@ func getFromAccountPage(data []byte) (Account, bool) {
 	account.FullName = accountJSON.User.FullName
 	account.ID = accountJSON.User.ID
 	account.Private = accountJSON.User.IsPrivate
-	account.verified = accountJSON.User.IsVerified
+	account.Verified = accountJSON.User.IsVerified
 	account.ProfilePicURL = accountJSON.User.ProfilePicURL
 	account.ProfilePicURLhd = accountJSON.User.ProfilePicURLHd
 	account.Username = accountJSON.User.Username
@@ -101,7 +101,7 @@ func getFromSearchPage(data []byte) ([]Account, error) {
 		account.Username = user.User.Username
 		account.FullName = user.User.FullName
 		account.Private = user.User.IsPrivate
-		account.verified = user.User.IsVerified
+		account.Verified = user.User.IsVerified
 		account.ProfilePicURL = user.User.ProfilePicURL
 		account.Followers = uint32(user.User.FollowerCount)
 

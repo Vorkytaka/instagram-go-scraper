@@ -44,7 +44,7 @@ func Test_GetAccoutByUsername(t *testing.T) {
 		if account.Biography != testCase.biography {
 			t.Errorf("Account biography is incorrect.\nExpect %s, get %s.", account.Biography, testCase.biography)
 		}
-		if account.verified != testCase.verified {
+		if account.Verified != testCase.verified {
 			t.Errorf("Account verified field is incorrect.\nExpect %t, get %t.", account.ProfilePicURLhd, testCase.profilePicURLhd)
 		}
 		if account.MediaCount == 0 {
@@ -311,7 +311,7 @@ func Test_SearchForUsers(t *testing.T) {
 		if accounts[0].Private {
 			t.Error("Incorrect account private field.")
 		}
-		if accounts[0].verified {
+		if accounts[0].Verified {
 			t.Error("Incorrect account verified field.")
 		}
 		if accounts[0].Followers == 0 {
