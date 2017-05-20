@@ -21,11 +21,11 @@ import (
 // GetAccountByUsername try to find account by username.
 func GetAccountByUsername(username string) (Account, error) {
 	url := fmt.Sprintf(accountInfoURL, username)
-	info, err := getJSONFromURL(url)
+	data, err := getDataFromURL(url)
 	if err != nil {
 		return Account{}, err
 	}
-	account, ok := getFromAccountPage(info)
+	account, ok := getFromAccountPage(data)
 	if !ok {
 		return account, errors.New("Can't parse account")
 	}
@@ -45,11 +45,11 @@ func GetMediaByURL(url string) (Media, error) {
 // then code of the media is 12376OtT5o.
 func GetMediaByCode(code string) (Media, error) {
 	url := fmt.Sprintf(mediaInfoURL, code)
-	info, err := getJSONFromURL(url)
+	data, err := getDataFromURL(url)
 	if err != nil {
 		return Media{}, err
 	}
-	media, ok := getFromMediaPage(info)
+	media, ok := getFromMediaPage(data)
 	if !ok {
 		return media, errors.New("Can't parse media")
 	}
@@ -77,10 +77,13 @@ func GetAccountMedia(username string, limit uint16) ([]Media, error) {
 				return medias, nil
 			}
 			count++
-			media, ok := getFromAccountMediaList(item)
-			if ok {
-				medias = append(medias, media)
-				maxID = media.ID
+			itemData, err := json.Marshal(item)
+			if err == nil {
+				media, ok := getFromAccountMediaList(itemData)
+				if ok {
+					medias = append(medias, media)
+					maxID = media.ID
+				}
 			}
 		}
 	}
@@ -126,9 +129,12 @@ func GetLocationMedia(id string, limit uint16) ([]Media, error) {
 				return medias, nil
 			}
 			count++
-			media, ok := getFromSearchMediaList(node)
-			if ok {
-				medias = append(medias, media)
+			nodeData, err := json.Marshal(node)
+			if err == nil {
+				media, ok := getFromSearchMediaList(nodeData)
+				if ok {
+					medias = append(medias, media)
+				}
 			}
 		}
 
@@ -154,9 +160,12 @@ func GetLocationTopMedia(id string) ([9]Media, error) {
 	medias := [9]Media{}
 	nodes, _ := jsonBody["nodes"].([]interface{})
 	for i, node := range nodes {
-		media, ok := getFromSearchMediaList(node)
-		if ok {
-			medias[i] = media
+		nodeData, err := json.Marshal(node)
+		if err == nil {
+			media, ok := getFromSearchMediaList(nodeData)
+			if ok {
+				medias[i] = media
+			}
 		}
 	}
 	return medias, nil
@@ -166,12 +175,12 @@ func GetLocationTopMedia(id string) ([9]Media, error) {
 // The id is a facebook location id.
 func GetLocationByID(id string) (Location, error) {
 	url := fmt.Sprintf(locationURL, id, "")
-	jsonBody, err := getJSONFromURL(url)
+	data, err := getDataFromURL(url)
 	if err != nil {
 		return Location{}, err
 	}
 
-	location, ok := getFromLocationPage(jsonBody)
+	location, ok := getFromLocationPage(data)
 	if !ok {
 		return Location{}, errors.New("Can't parse location")
 	}
@@ -200,9 +209,12 @@ func GetTagMedia(tag string, quantity uint16) ([]Media, error) {
 				return medias, nil
 			}
 			count++
-			media, ok := getFromSearchMediaList(node)
-			if ok {
-				medias = append(medias, media)
+			nodeData, err := json.Marshal(node)
+			if err == nil {
+				media, ok := getFromSearchMediaList(nodeData)
+				if ok {
+					medias = append(medias, media)
+				}
 			}
 		}
 
@@ -227,9 +239,12 @@ func GetTagTopMedia(tag string) ([9]Media, error) {
 	medias := [9]Media{}
 	nodes, _ := jsonBody["nodes"].([]interface{})
 	for i, node := range nodes {
-		media, ok := getFromSearchMediaList(node)
-		if ok {
-			medias[i] = media
+		nodeData, err := json.Marshal(node)
+		if err == nil {
+			media, ok := getFromSearchMediaList(nodeData)
+			if ok {
+				medias[i] = media
+			}
 		}
 	}
 	return medias, nil
@@ -239,22 +254,33 @@ func GetTagTopMedia(tag string) ([9]Media, error) {
 // Return slice of Account with length of 0 or more.
 func SearchForUsers(username string) ([]Account, error) {
 	url := fmt.Sprintf(searchURL, username)
-	jsonBody, err := getJSONFromURL(url)
+	data, err := getDataFromURL(url)
 	if err != nil {
 		return nil, err
 	}
-	accounts := []Account{}
-	users, _ := jsonBody["users"].([]interface{})
-	for _, user := range users {
-		account, ok := getFromSearchPage(user.(map[string]interface{}))
-		if ok {
-			accounts = append(accounts, account)
-		}
+	accounts, err := getFromSearchPage(data)
+	if err != nil {
+		return nil, err
 	}
 	return accounts, nil
 }
 
 func getJSONFromURL(url string) (map[string]interface{}, error) {
+	data, err := getDataFromURL(url)
+	if err != nil {
+		return nil, err
+	}
+
+	var jsonBody map[string]interface{}
+	err = json.Unmarshal(data, &jsonBody)
+	if err != nil {
+		return nil, err
+	}
+
+	return jsonBody, nil
+}
+
+func getDataFromURL(url string) ([]byte, error) {
 	resp, err := http.Get(url)
 	if err != nil || resp.StatusCode == 404 {
 		return nil, err
@@ -266,11 +292,5 @@ func getJSONFromURL(url string) (map[string]interface{}, error) {
 		return nil, err
 	}
 
-	var jsonBody map[string]interface{}
-	err = json.Unmarshal(body, &jsonBody)
-	if err != nil {
-		return nil, err
-	}
-
-	return jsonBody, nil
+	return body, nil
 }
