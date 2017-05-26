@@ -179,7 +179,10 @@ func Test_GetAllUserMedia_quantity(t *testing.T) {
 		account, _ := GetAccountByUsername(testCase.username)
 		expected := int(account.MediaCount)
 		medias, err := GetAllAccountMedia(testCase.username)
-		if err != nil || len(medias) != expected {
+		if err != nil {
+			t.Error(err)
+		}
+		if len(medias) != expected {
 			t.Error("Wrong numbers of media.")
 		}
 	}
@@ -226,7 +229,10 @@ func Test_GetLocationMedia_quantity(t *testing.T) {
 		{"17326249", 25},
 	} {
 		medias, err := GetLocationMedia(testCase.locationID, testCase.quantity)
-		if err != nil || len(medias) != int(testCase.quantity) {
+		if err != nil {
+			t.Error(err)
+		}
+		if len(medias) != int(testCase.quantity) {
 			t.Errorf("Wrong numbers of media. Expect %d, get %d.", testCase.quantity, len(medias))
 		}
 	}
@@ -239,7 +245,10 @@ func Test_GetLocationTopMedia_quantity(t *testing.T) {
 		{"17326249"},
 	} {
 		medias, err := GetLocationTopMedia(testCase.locationID)
-		if err != nil || len(medias) != 9 {
+		if err != nil {
+			t.Error(err)
+		}
+		if len(medias) != 9 {
 			t.Error("Wrong numbers of media.")
 		}
 	}
@@ -253,8 +262,10 @@ func Test_GetLocationById(t *testing.T) {
 		{"212988663", "new-york-new-york"},
 	} {
 		location, err := GetLocationByID(testCase.locationID)
-		if err != nil ||
-			location.Slug != testCase.slug {
+		if err != nil {
+			t.Error(err)
+		}
+		if location.Slug != testCase.slug {
 			t.Errorf("Wrong location info. Expect slug %s, but get %s.", testCase.slug, location.Slug)
 		}
 	}
@@ -269,7 +280,10 @@ func Test_GetTagMedia_quantity(t *testing.T) {
 		{"haha", 25},
 	} {
 		medias, err := GetTagMedia(testCase.tag, testCase.quantity)
-		if err != nil || len(medias) != int(testCase.quantity) {
+		if err != nil {
+			t.Error(err)
+		}
+		if len(medias) != int(testCase.quantity) {
 			t.Error("Wrong numbers of media.")
 		}
 	}
@@ -282,7 +296,10 @@ func Test_GetTagTopMedia_quantity(t *testing.T) {
 		{"lol"},
 	} {
 		medias, err := GetTagTopMedia(testCase.tag)
-		if err != nil || len(medias) != 9 {
+		if err != nil {
+			t.Error(err)
+		}
+		if len(medias) != 9 {
 			t.Error("Wrong numbers of media.")
 		}
 	}
