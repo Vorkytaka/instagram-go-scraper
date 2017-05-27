@@ -41,7 +41,7 @@ func (m *Media) Update() {
 	}
 }
 
-func getFromMediaPage(data []byte) (Media, bool) {
+func getFromMediaPage(data []byte) (Media, error) {
 	var mediaJSON struct {
 		Graphql struct {
 			ShortcodeMedia struct {
@@ -79,7 +79,7 @@ func getFromMediaPage(data []byte) (Media, bool) {
 
 	err := json.Unmarshal(data, &mediaJSON)
 	if err != nil {
-		return Media{}, false
+		return Media{}, err
 	}
 
 	media := Media{}
@@ -105,10 +105,10 @@ func getFromMediaPage(data []byte) (Media, bool) {
 	media.Owner.FullName = mediaJSON.Graphql.ShortcodeMedia.Owner.FullName
 	media.Owner.Private = mediaJSON.Graphql.ShortcodeMedia.Owner.IsPrivate
 
-	return media, true
+	return media, nil
 }
 
-func getFromAccountMediaList(data []byte) (Media, bool) {
+func getFromAccountMediaList(data []byte) (Media, error) {
 	var mediaJSON struct {
 		ID   string `json:"id"`
 		Code string `json:"code"`
@@ -147,7 +147,7 @@ func getFromAccountMediaList(data []byte) (Media, bool) {
 
 	err := json.Unmarshal(data, &mediaJSON)
 	if err != nil {
-		return Media{}, false
+		return Media{}, err
 	}
 
 	media := Media{}
@@ -174,10 +174,10 @@ func getFromAccountMediaList(data []byte) (Media, bool) {
 	media.Owner.ID = mediaJSON.User.ID
 	media.Owner.ProfilePicURL = mediaJSON.User.ProfilePicture
 
-	return media, true
+	return media, nil
 }
 
-func getFromSearchMediaList(data []byte) (Media, bool) {
+func getFromSearchMediaList(data []byte) (Media, error) {
 	var mediaJSON struct {
 		CommentsDisabled bool `json:"comments_disabled"`
 		ID               string `json:"id"`
@@ -200,7 +200,7 @@ func getFromSearchMediaList(data []byte) (Media, bool) {
 
 	err := json.Unmarshal(data, &mediaJSON)
 	if err != nil {
-		return Media{}, false
+		return Media{}, err
 	}
 
 	media := Media{}
@@ -219,5 +219,5 @@ func getFromSearchMediaList(data []byte) (Media, bool) {
 		media.Type = TypeImage
 	}
 
-	return media, true
+	return media, nil
 }
