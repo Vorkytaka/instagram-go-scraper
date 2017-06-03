@@ -19,6 +19,12 @@ const TypeImage = "image"
 // TypeVideo is a string that define video type for media.
 const TypeVideo = "video"
 
+const (
+	image   = "GraphImage"
+	video   = "GraphVideo"
+	sidebar = "GraphSidecar"
+)
+
 // A Media describes an Instagram media info.
 type Media struct {
 	Caption       string
@@ -31,6 +37,13 @@ type Media struct {
 	Type          string
 	MediaURL      string
 	Owner         Account
+	MediaList     []mediaItem
+}
+
+type mediaItem struct {
+	Type string
+	URL  string
+	Code string
 }
 
 // Update try to update media data
@@ -73,6 +86,18 @@ func getFromMediaPage(data []byte) (Media, error) {
 					IsPrivate     bool `json:"is_private"`
 				} `json:"owner"`
 				IsAd bool `json:"is_ad"`
+				EdgeSidecarToChildren struct {
+					Edges []struct {
+						Node struct {
+							Typename   string `json:"__typename"`
+							ID         string `json:"id"`
+							Shortcode  string `json:"shortcode"`
+							DisplayURL string `json:"display_url"`
+							VideoURL   string `json:"video_url"`
+							IsVideo    bool `json:"is_video"`
+						} `json:"node"`
+					} `json:"edges"`
+				} `json:"edge_sidecar_to_children"`
 			} `json:"shortcode_media"`
 		} `json:"graphql"`
 	}
@@ -91,7 +116,21 @@ func getFromMediaPage(data []byte) (Media, error) {
 	media.LikesCount = uint32(mediaJSON.Graphql.ShortcodeMedia.EdgeMediaPreviewLike.Count)
 	media.Caption = mediaJSON.Graphql.ShortcodeMedia.EdgeMediaToCaption.Edges[0].Node.Text
 
-	if mediaJSON.Graphql.ShortcodeMedia.IsVideo {
+	var mediaType = mediaJSON.Graphql.ShortcodeMedia.Typename
+	if mediaType == sidebar {
+		for _, mediaItemJSON := range mediaJSON.Graphql.ShortcodeMedia.EdgeSidecarToChildren.Edges {
+			var item mediaItem
+			item.Code = mediaItemJSON.Node.Shortcode
+			if mediaItemJSON.Node.IsVideo {
+				item.URL = mediaItemJSON.Node.VideoURL
+				item.Type = TypeVideo
+			} else {
+				item.URL = mediaItemJSON.Node.DisplayURL
+				item.Type = TypeImage
+			}
+			media.MediaList = append(media.MediaList, item)
+		}
+	} else if mediaType == video {
 		media.Type = TypeVideo
 		media.MediaURL = mediaJSON.Graphql.ShortcodeMedia.VideoURL
 	} else {
