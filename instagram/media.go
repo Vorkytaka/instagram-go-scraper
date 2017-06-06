@@ -19,10 +19,14 @@ const TypeImage = "image"
 // TypeVideo is a string that define video type for media.
 const TypeVideo = "video"
 
+// TypeCarousel is a string that define carousel (collection of media) type for media.
+const TypeCarousel = "carousel"
+
 const (
-	image   = "GraphImage"
 	video   = "GraphVideo"
 	sidebar = "GraphSidecar"
+
+	carousel = "carousel"
 )
 
 // A Media describes an Instagram media info.
@@ -130,6 +134,7 @@ func getFromMediaPage(data []byte) (Media, error) {
 			}
 			media.MediaList = append(media.MediaList, item)
 		}
+		media.Type = TypeCarousel
 	} else {
 		if mediaType == video {
 			media.Type = TypeVideo
@@ -189,6 +194,15 @@ func getFromAccountMediaList(data []byte) (Media, error) {
 				URL    string `json:"url"`
 			} `json:"standard_resolution"`
 		} `json:"videos"`
+		CarouselMedia []struct {
+			Images struct {
+				StandardResolution struct {
+					URL string `json:"url"`
+				} `json:"standard_resolution"`
+			} `json:"images"`
+			UsersInPhoto []interface{} `json:"users_in_photo"`
+			Type         string `json:"type"`
+		} `json:"carousel_media"`
 	}
 
 	err := json.Unmarshal(data, &mediaJSON)
@@ -199,7 +213,6 @@ func getFromAccountMediaList(data []byte) (Media, error) {
 	media := Media{}
 	media.Code = mediaJSON.Code
 	media.ID = mediaJSON.ID
-	media.Type = mediaJSON.Type
 	media.Caption = mediaJSON.Caption.Text
 	media.LikesCount = uint32(mediaJSON.Likes.Count)
 	media.CommentsCount = uint32(mediaJSON.Comments.Count)
@@ -209,10 +222,27 @@ func getFromAccountMediaList(data []byte) (Media, error) {
 		media.Date = date
 	}
 
-	if media.Type == TypeVideo {
-		media.MediaURL = mediaJSON.Videos.StandardResolution.URL
+	if mediaJSON.Type == carousel {
+		media.Type = TypeCarousel
+		for _, itemJSOM := range mediaJSON.CarouselMedia {
+			var item mediaItem
+			item.Type = itemJSOM.Type
+			item.URL = itemJSOM.Images.StandardResolution.URL + ".jpg"
+			media.MediaList = append(media.MediaList, item)
+		}
 	} else {
-		media.MediaURL = mediaJSON.Images.StandardResolution.URL
+		if mediaJSON.Type == TypeVideo {
+			media.MediaURL = mediaJSON.Videos.StandardResolution.URL
+			media.Type = TypeVideo
+		} else {
+			media.MediaURL = mediaJSON.Images.StandardResolution.URL
+			media.Type = TypeImage
+		}
+		var item mediaItem
+		item.Type = media.Type
+		item.URL = media.MediaURL
+		item.Code = media.Code
+		media.MediaList = append(media.MediaList, item)
 	}
 
 	media.Owner.Username = mediaJSON.User.Username
