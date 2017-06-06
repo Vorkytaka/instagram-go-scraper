@@ -23,9 +23,10 @@ const TypeVideo = "video"
 const TypeCarousel = "carousel"
 
 const (
-	video   = "GraphVideo"
-	sidebar = "GraphSidecar"
+	graphVideo   = "GraphVideo"
+	graphSidebar = "GraphSidecar"
 
+	video    = "video"
 	carousel = "carousel"
 )
 
@@ -121,22 +122,22 @@ func getFromMediaPage(data []byte) (Media, error) {
 	media.Caption = mediaJSON.Graphql.ShortcodeMedia.EdgeMediaToCaption.Edges[0].Node.Text
 
 	var mediaType = mediaJSON.Graphql.ShortcodeMedia.Typename
-	if mediaType == sidebar {
-		for _, mediaItemJSON := range mediaJSON.Graphql.ShortcodeMedia.EdgeSidecarToChildren.Edges {
+	if mediaType == graphSidebar {
+		for _, itemJSON := range mediaJSON.Graphql.ShortcodeMedia.EdgeSidecarToChildren.Edges {
 			var item mediaItem
-			item.Code = mediaItemJSON.Node.Shortcode
-			if mediaItemJSON.Node.IsVideo {
-				item.URL = mediaItemJSON.Node.VideoURL
+			item.Code = itemJSON.Node.Shortcode
+			if itemJSON.Node.IsVideo {
+				item.URL = itemJSON.Node.VideoURL
 				item.Type = TypeVideo
 			} else {
-				item.URL = mediaItemJSON.Node.DisplayURL
+				item.URL = itemJSON.Node.DisplayURL
 				item.Type = TypeImage
 			}
 			media.MediaList = append(media.MediaList, item)
 		}
 		media.Type = TypeCarousel
 	} else {
-		if mediaType == video {
+		if mediaType == graphVideo {
 			media.Type = TypeVideo
 			media.MediaURL = mediaJSON.Graphql.ShortcodeMedia.VideoURL
 		} else {
@@ -231,7 +232,7 @@ func getFromAccountMediaList(data []byte) (Media, error) {
 			media.MediaList = append(media.MediaList, item)
 		}
 	} else {
-		if mediaJSON.Type == TypeVideo {
+		if mediaJSON.Type == video {
 			media.MediaURL = mediaJSON.Videos.StandardResolution.URL
 			media.Type = TypeVideo
 		} else {
