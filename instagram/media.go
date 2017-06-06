@@ -203,6 +203,11 @@ func getFromAccountMediaList(data []byte) (Media, error) {
 					URL string `json:"url"`
 				} `json:"standard_resolution"`
 			} `json:"images"`
+			Videos struct {
+				StandardResolution struct {
+					URL string `json:"url"`
+				} `json:"standard_resolution"`
+			} `json:"videos"`
 			UsersInPhoto []interface{} `json:"users_in_photo"`
 			Type         string `json:"type"`
 		} `json:"carousel_media"`
@@ -230,7 +235,11 @@ func getFromAccountMediaList(data []byte) (Media, error) {
 		for _, itemJSOM := range mediaJSON.CarouselMedia {
 			var item mediaItem
 			item.Type = itemJSOM.Type
-			item.URL = itemJSOM.Images.StandardResolution.URL + ".jpg"
+			if item.Type == video {
+				item.URL = itemJSOM.Videos.StandardResolution.URL
+			} else {
+				item.URL = itemJSOM.Images.StandardResolution.URL
+			}
 			media.MediaList = append(media.MediaList, item)
 		}
 	} else {
