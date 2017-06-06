@@ -108,13 +108,13 @@ func Test_GetMediaByCode(t *testing.T) {
 		if media.Caption != testCase.caption {
 			t.Errorf("Media caption is incorrect.\nExpect %s, get %s.", media.Caption, testCase.caption)
 		}
-		if media.Code != testCase.code {
+		if media.Code != testCase.code || media.MediaList[0].Code != testCase.code {
 			t.Errorf("Media code is incorrect.\nExpect %s, get %s.", media.Code, testCase.code)
 		}
 		if media.ID != testCase.id {
 			t.Errorf("Media id is incorrect.\nExpect %s, get %s.", media.ID, testCase.id)
 		}
-		if media.Type != testCase.mediaType {
+		if media.Type != testCase.mediaType || media.MediaList[0].Type != testCase.mediaType {
 			t.Errorf("Media type is incorrect.\nExpect %s, get %s.", media.Type, testCase.mediaType)
 		}
 		if media.Owner.ID != testCase.ownerID {

@@ -130,12 +130,19 @@ func getFromMediaPage(data []byte) (Media, error) {
 			}
 			media.MediaList = append(media.MediaList, item)
 		}
-	} else if mediaType == video {
-		media.Type = TypeVideo
-		media.MediaURL = mediaJSON.Graphql.ShortcodeMedia.VideoURL
 	} else {
-		media.Type = TypeImage
-		media.MediaURL = mediaJSON.Graphql.ShortcodeMedia.DisplayURL
+		if mediaType == video {
+			media.Type = TypeVideo
+			media.MediaURL = mediaJSON.Graphql.ShortcodeMedia.VideoURL
+		} else {
+			media.Type = TypeImage
+			media.MediaURL = mediaJSON.Graphql.ShortcodeMedia.DisplayURL
+		}
+		var item mediaItem
+		item.Code = media.Code
+		item.Type = media.Type
+		item.URL = media.MediaURL
+		media.MediaList = append(media.MediaList, item)
 	}
 
 	media.Owner.ID = mediaJSON.Graphql.ShortcodeMedia.Owner.ID
