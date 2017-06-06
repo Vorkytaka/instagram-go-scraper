@@ -51,7 +51,10 @@ users, err := instagram.SearchForUsers("username")
 You can update media by call `Update` method.
 ```go
 media, err := instagram.GetMediaByCode("code")
-media.Update()
+err := media.Update()
+if err != nil {
+    // media didn't update
+}
 ```
 
 You'll get `err != nil` if request return 404 or if there a parsing error.

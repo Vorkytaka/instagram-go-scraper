@@ -52,11 +52,13 @@ type mediaItem struct {
 }
 
 // Update try to update media data
-func (m *Media) Update() {
+func (m *Media) Update() error {
 	media, err := GetMediaByCode(m.Code)
-	if err == nil {
-		*m = media
+	if err != nil {
+		return err
 	}
+	*m = media
+	return nil
 }
 
 func getFromMediaPage(data []byte) (Media, error) {
