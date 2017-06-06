@@ -19,6 +19,17 @@ const TypeImage = "image"
 // TypeVideo is a string that define video type for media.
 const TypeVideo = "video"
 
+// TypeCarousel is a string that define carousel (collection of media) type for media.
+const TypeCarousel = "carousel"
+
+const (
+	graphVideo   = "GraphVideo"
+	graphSidebar = "GraphSidecar"
+
+	video    = "video"
+	carousel = "carousel"
+)
+
 // A Media describes an Instagram media info.
 type Media struct {
 	Caption       string
@@ -31,17 +42,26 @@ type Media struct {
 	Type          string
 	MediaURL      string
 	Owner         Account
+	MediaList     []mediaItem
+}
+
+type mediaItem struct {
+	Type string
+	URL  string
+	Code string
 }
 
 // Update try to update media data
-func (m *Media) Update() {
+func (m *Media) Update() error {
 	media, err := GetMediaByCode(m.Code)
-	if err == nil {
-		*m = media
+	if err != nil {
+		return err
 	}
+	*m = media
+	return nil
 }
 
-func getFromMediaPage(data []byte) (Media, bool) {
+func getFromMediaPage(data []byte) (Media, error) {
 	var mediaJSON struct {
 		Graphql struct {
 			ShortcodeMedia struct {
@@ -73,13 +93,25 @@ func getFromMediaPage(data []byte) (Media, bool) {
 					IsPrivate     bool `json:"is_private"`
 				} `json:"owner"`
 				IsAd bool `json:"is_ad"`
+				EdgeSidecarToChildren struct {
+					Edges []struct {
+						Node struct {
+							Typename   string `json:"__typename"`
+							ID         string `json:"id"`
+							Shortcode  string `json:"shortcode"`
+							DisplayURL string `json:"display_url"`
+							VideoURL   string `json:"video_url"`
+							IsVideo    bool `json:"is_video"`
+						} `json:"node"`
+					} `json:"edges"`
+				} `json:"edge_sidecar_to_children"`
 			} `json:"shortcode_media"`
 		} `json:"graphql"`
 	}
 
 	err := json.Unmarshal(data, &mediaJSON)
 	if err != nil {
-		return Media{}, false
+		return Media{}, err
 	}
 
 	media := Media{}
@@ -91,12 +123,34 @@ func getFromMediaPage(data []byte) (Media, bool) {
 	media.LikesCount = uint32(mediaJSON.Graphql.ShortcodeMedia.EdgeMediaPreviewLike.Count)
 	media.Caption = mediaJSON.Graphql.ShortcodeMedia.EdgeMediaToCaption.Edges[0].Node.Text
 
-	if mediaJSON.Graphql.ShortcodeMedia.IsVideo {
-		media.Type = TypeVideo
-		media.MediaURL = mediaJSON.Graphql.ShortcodeMedia.VideoURL
+	var mediaType = mediaJSON.Graphql.ShortcodeMedia.Typename
+	if mediaType == graphSidebar {
+		for _, itemJSON := range mediaJSON.Graphql.ShortcodeMedia.EdgeSidecarToChildren.Edges {
+			var item mediaItem
+			item.Code = itemJSON.Node.Shortcode
+			if itemJSON.Node.IsVideo {
+				item.URL = itemJSON.Node.VideoURL
+				item.Type = TypeVideo
+			} else {
+				item.URL = itemJSON.Node.DisplayURL
+				item.Type = TypeImage
+			}
+			media.MediaList = append(media.MediaList, item)
+		}
+		media.Type = TypeCarousel
 	} else {
-		media.Type = TypeImage
-		media.MediaURL = mediaJSON.Graphql.ShortcodeMedia.DisplayURL
+		if mediaType == graphVideo {
+			media.Type = TypeVideo
+			media.MediaURL = mediaJSON.Graphql.ShortcodeMedia.VideoURL
+		} else {
+			media.Type = TypeImage
+			media.MediaURL = mediaJSON.Graphql.ShortcodeMedia.DisplayURL
+		}
+		var item mediaItem
+		item.Code = media.Code
+		item.Type = media.Type
+		item.URL = media.MediaURL
+		media.MediaList = append(media.MediaList, item)
 	}
 
 	media.Owner.ID = mediaJSON.Graphql.ShortcodeMedia.Owner.ID
@@ -105,10 +159,10 @@ func getFromMediaPage(data []byte) (Media, bool) {
 	media.Owner.FullName = mediaJSON.Graphql.ShortcodeMedia.Owner.FullName
 	media.Owner.Private = mediaJSON.Graphql.ShortcodeMedia.Owner.IsPrivate
 
-	return media, true
+	return media, nil
 }
 
-func getFromAccountMediaList(data []byte) (Media, bool) {
+func getFromAccountMediaList(data []byte) (Media, error) {
 	var mediaJSON struct {
 		ID   string `json:"id"`
 		Code string `json:"code"`
@@ -143,17 +197,30 @@ func getFromAccountMediaList(data []byte) (Media, bool) {
 				URL    string `json:"url"`
 			} `json:"standard_resolution"`
 		} `json:"videos"`
+		CarouselMedia []struct {
+			Images struct {
+				StandardResolution struct {
+					URL string `json:"url"`
+				} `json:"standard_resolution"`
+			} `json:"images"`
+			Videos struct {
+				StandardResolution struct {
+					URL string `json:"url"`
+				} `json:"standard_resolution"`
+			} `json:"videos"`
+			UsersInPhoto []interface{} `json:"users_in_photo"`
+			Type         string `json:"type"`
+		} `json:"carousel_media"`
 	}
 
 	err := json.Unmarshal(data, &mediaJSON)
 	if err != nil {
-		return Media{}, false
+		return Media{}, err
 	}
 
 	media := Media{}
 	media.Code = mediaJSON.Code
 	media.ID = mediaJSON.ID
-	media.Type = mediaJSON.Type
 	media.Caption = mediaJSON.Caption.Text
 	media.LikesCount = uint32(mediaJSON.Likes.Count)
 	media.CommentsCount = uint32(mediaJSON.Comments.Count)
@@ -163,10 +230,31 @@ func getFromAccountMediaList(data []byte) (Media, bool) {
 		media.Date = date
 	}
 
-	if media.Type == TypeVideo {
-		media.MediaURL = mediaJSON.Videos.StandardResolution.URL
+	if mediaJSON.Type == carousel {
+		media.Type = TypeCarousel
+		for _, itemJSOM := range mediaJSON.CarouselMedia {
+			var item mediaItem
+			item.Type = itemJSOM.Type
+			if item.Type == video {
+				item.URL = itemJSOM.Videos.StandardResolution.URL
+			} else {
+				item.URL = itemJSOM.Images.StandardResolution.URL
+			}
+			media.MediaList = append(media.MediaList, item)
+		}
 	} else {
-		media.MediaURL = mediaJSON.Images.StandardResolution.URL
+		if mediaJSON.Type == video {
+			media.MediaURL = mediaJSON.Videos.StandardResolution.URL
+			media.Type = TypeVideo
+		} else {
+			media.MediaURL = mediaJSON.Images.StandardResolution.URL
+			media.Type = TypeImage
+		}
+		var item mediaItem
+		item.Type = media.Type
+		item.URL = media.MediaURL
+		item.Code = media.Code
+		media.MediaList = append(media.MediaList, item)
 	}
 
 	media.Owner.Username = mediaJSON.User.Username
@@ -174,10 +262,10 @@ func getFromAccountMediaList(data []byte) (Media, bool) {
 	media.Owner.ID = mediaJSON.User.ID
 	media.Owner.ProfilePicURL = mediaJSON.User.ProfilePicture
 
-	return media, true
+	return media, nil
 }
 
-func getFromSearchMediaList(data []byte) (Media, bool) {
+func getFromSearchMediaList(data []byte) (Media, error) {
 	var mediaJSON struct {
 		CommentsDisabled bool `json:"comments_disabled"`
 		ID               string `json:"id"`
@@ -200,7 +288,7 @@ func getFromSearchMediaList(data []byte) (Media, bool) {
 
 	err := json.Unmarshal(data, &mediaJSON)
 	if err != nil {
-		return Media{}, false
+		return Media{}, err
 	}
 
 	media := Media{}
@@ -219,5 +307,5 @@ func getFromSearchMediaList(data []byte) (Media, bool) {
 		media.Type = TypeImage
 	}
 
-	return media, true
+	return media, nil
 }

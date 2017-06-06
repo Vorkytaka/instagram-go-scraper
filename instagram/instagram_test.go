@@ -108,13 +108,13 @@ func Test_GetMediaByCode(t *testing.T) {
 		if media.Caption != testCase.caption {
 			t.Errorf("Media caption is incorrect.\nExpect %s, get %s.", media.Caption, testCase.caption)
 		}
-		if media.Code != testCase.code {
+		if media.Code != testCase.code || media.MediaList[0].Code != testCase.code {
 			t.Errorf("Media code is incorrect.\nExpect %s, get %s.", media.Code, testCase.code)
 		}
 		if media.ID != testCase.id {
 			t.Errorf("Media id is incorrect.\nExpect %s, get %s.", media.ID, testCase.id)
 		}
-		if media.Type != testCase.mediaType {
+		if media.Type != testCase.mediaType || media.MediaList[0].Type != testCase.mediaType {
 			t.Errorf("Media type is incorrect.\nExpect %s, get %s.", media.Type, testCase.mediaType)
 		}
 		if media.Owner.ID != testCase.ownerID {
@@ -128,6 +128,26 @@ func Test_GetMediaByCode(t *testing.T) {
 		}
 		if media.LikesCount == 0 {
 			t.Error("Media has empty likes count.")
+		}
+	}
+}
+
+func Test_GetMediaByCode_slider(t *testing.T) {
+	for _, testCase := range []struct {
+		code  string
+		count int
+	}{
+		{"BUxZSI3B5yq", 2 },
+	} {
+		media, err := GetMediaByCode(testCase.code)
+		if err != nil {
+			t.Error(err)
+		}
+		if media.Code != testCase.code {
+			t.Errorf("Media code is incorrect.\nExpect %s, get %s.", media.Code, testCase.code)
+		}
+		if len(media.MediaList) != testCase.count {
+			t.Errorf("Media list got incorrect size.\nExpect %d, get %d.", testCase.count, len(media.MediaList))
 		}
 	}
 }
@@ -337,7 +357,7 @@ func Test_SearchForUsers(t *testing.T) {
 	}
 }
 
-func Test_MediaUpdateTest(t *testing.T) {
+func Test_MediaUpdate(t *testing.T) {
 	for _, testCase := range []struct {
 		code string
 	}{
@@ -346,11 +366,32 @@ func Test_MediaUpdateTest(t *testing.T) {
 	} {
 		media := Media{}
 		media.Code = testCase.code
-		media.Update()
+		err := media.Update()
+		if err != nil {
+			t.Error(err)
+		}
 		if len(media.Caption) == 0 ||
 			media.Date == 0 || len(media.ID) == 0 || media.LikesCount == 0 ||
 			len(media.Type) == 0 || len(media.MediaURL) == 0 {
 			t.Error("Media wasn't update")
+		}
+	}
+}
+
+func Test_AccountUpdate(t *testing.T) {
+	for _, testCase := range []struct {
+		username, fullname string
+	}{
+		{"solidlsnake", "Konstantin"},
+	} {
+		account := Account{}
+		account.Username = testCase.username
+		err := account.Update()
+		if err != nil {
+			t.Error(err)
+		}
+		if account.FullName != testCase.fullname {
+			t.Error("Account didn't update")
 		}
 	}
 }

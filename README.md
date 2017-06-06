@@ -48,10 +48,37 @@ media, err := instagram.GetLocationTopMedia("tag")
 users, err := instagram.SearchForUsers("username")
 ```
 
-You can update media by call `Update` method.
+You'll get `err != nil` if request return 404 or if there a parsing error.
+
+### About media updates:
+
+Media can have one of 3 types:
+* `TypeImage`
+* `TypeVideo`
+* `TypeCarousel`
+
+From v0.2.03 media has MediaList field for collection of media.
+
+If media is carousel, then there will be a list of all media.
+
+If media is image or video, then there will be only one media, but also,
+for backward compatibility, media url will be in `media.MediaURL` field.
+
+### Update data:
+
+You can update media by call `Update` method:
 ```go
 media, err := instagram.GetMediaByCode("code")
-media.Update()
+err := media.Update()
+if err != nil {
+    // media didn't update
+}
 ```
+Same with account:
+```go
+account, err := instagram.GetAccountByUsername("username")
+err := account.Update()
+if err != nil {
 
-You'll get `err != nil` if request return 404 or if there a parsing error.
+}
+```

@@ -20,7 +20,7 @@ type Location struct {
 	Slug       string
 }
 
-func getFromLocationPage(data []byte) (Location, bool) {
+func getFromLocationPage(data []byte) (Location, error) {
 	var locationJSON struct {
 		Location struct {
 			ID            string `json:"id"`
@@ -34,7 +34,7 @@ func getFromLocationPage(data []byte) (Location, bool) {
 
 	err := json.Unmarshal(data, &locationJSON)
 	if err != nil {
-		return Location{}, false
+		return Location{}, err
 	}
 
 	location := Location{}
@@ -45,5 +45,5 @@ func getFromLocationPage(data []byte) (Location, bool) {
 	location.Lng = locationJSON.Location.Lng
 	location.Slug = locationJSON.Location.Slug
 
-	return location, true
+	return location, nil
 }

@@ -49,9 +49,9 @@ func GetMediaByCode(code string) (Media, error) {
 	if err != nil {
 		return Media{}, err
 	}
-	media, ok := getFromMediaPage(data)
-	if !ok {
-		return media, errors.New("Can't parse media")
+	media, err := getFromMediaPage(data)
+	if err != nil {
+		return Media{}, err
 	}
 	return media, nil
 }
@@ -79,8 +79,8 @@ func GetAccountMedia(username string, limit uint16) ([]Media, error) {
 			count++
 			itemData, err := json.Marshal(item)
 			if err == nil {
-				media, ok := getFromAccountMediaList(itemData)
-				if ok {
+				media, err := getFromAccountMediaList(itemData)
+				if err == nil {
 					medias = append(medias, media)
 					maxID = media.ID
 				}
@@ -131,8 +131,8 @@ func GetLocationMedia(id string, limit uint16) ([]Media, error) {
 			count++
 			nodeData, err := json.Marshal(node)
 			if err == nil {
-				media, ok := getFromSearchMediaList(nodeData)
-				if ok {
+				media, err := getFromSearchMediaList(nodeData)
+				if err == nil {
 					medias = append(medias, media)
 				}
 			}
@@ -162,8 +162,8 @@ func GetLocationTopMedia(id string) ([9]Media, error) {
 	for i, node := range nodes {
 		nodeData, err := json.Marshal(node)
 		if err == nil {
-			media, ok := getFromSearchMediaList(nodeData)
-			if ok {
+			media, err := getFromSearchMediaList(nodeData)
+			if err == nil {
 				medias[i] = media
 			}
 		}
@@ -180,9 +180,9 @@ func GetLocationByID(id string) (Location, error) {
 		return Location{}, err
 	}
 
-	location, ok := getFromLocationPage(data)
-	if !ok {
-		return Location{}, errors.New("Can't parse location")
+	location, err := getFromLocationPage(data)
+	if err != nil {
+		return Location{}, err
 	}
 	return location, nil
 }
@@ -211,8 +211,8 @@ func GetTagMedia(tag string, quantity uint16) ([]Media, error) {
 			count++
 			nodeData, err := json.Marshal(node)
 			if err == nil {
-				media, ok := getFromSearchMediaList(nodeData)
-				if ok {
+				media, err := getFromSearchMediaList(nodeData)
+				if err == nil {
 					medias = append(medias, media)
 				}
 			}
@@ -241,8 +241,8 @@ func GetTagTopMedia(tag string) ([9]Media, error) {
 	for i, node := range nodes {
 		nodeData, err := json.Marshal(node)
 		if err == nil {
-			media, ok := getFromSearchMediaList(nodeData)
-			if ok {
+			media, err := getFromSearchMediaList(nodeData)
+			if err == nil {
 				medias[i] = media
 			}
 		}

@@ -26,6 +26,16 @@ type Account struct {
 	Username        string
 }
 
+// Update try to update account info
+func (a *Account) Update() error {
+	account, err := GetAccountByUsername(a.Username)
+	if err != nil {
+		return err
+	}
+	*a = account
+	return nil
+}
+
 func getFromAccountPage(data []byte) (Account, bool) {
 	var accountJSON struct {
 		User struct {
