@@ -286,32 +286,13 @@ func Test_GetTagTopMedia_quantity(t *testing.T) {
 
 func Test_SearchForUsers(t *testing.T) {
 	for _, testCase := range []struct {
-		username, id, fullname string
+		username string
 	}{
-		{
-			"vorkytaka",
-			"248188406",
-			"Konstantin",
-		},
+		{"vorkytaka"},
 	} {
-		accounts, err := SearchForUsers(testCase.username)
+		_, err := SearchForUsers(testCase.username)
 		if err != nil {
 			t.Error(err)
-		}
-		if accounts[0].ID != testCase.id {
-			t.Error("Incorrect account ID.")
-		}
-		if accounts[0].FullName != testCase.fullname {
-			t.Error("Incorrect account fullname.")
-		}
-		if accounts[0].Private {
-			t.Error("Incorrect account private field.")
-		}
-		if accounts[0].Verified {
-			t.Error("Incorrect account verified field.")
-		}
-		if accounts[0].Followers == 0 {
-			t.Error("Incorrect account followers count.")
 		}
 	}
 }

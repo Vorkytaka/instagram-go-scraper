@@ -41,3 +41,29 @@ func Test_getFromAccountPage(t *testing.T) {
 		t.Error("Account has empty following count.")
 	}
 }
+
+func Test_getFromSearchPage(t *testing.T) {
+	fullname := "Konstantin"
+	id := "248188406"
+	jsonBody := []byte("{\"users\":[{\"position\":0,\"user\":{\"pk\":\"248188406\",\"username\":\"vorkytaka\",\"full_name\":\"Konstantin\",\"is_private\":false,\"profile_pic_url\":\"https://scontent-arn2-1.cdninstagram.com/t51.2885-19/s150x150/17125816_320904131658190_1521093063361953792_a.jpg\",\"profile_pic_id\":\"1467642282546943639_248188406\",\"is_verified\":false,\"has_anonymous_profile_picture\":false,\"follower_count\":116,\"byline\":\"Взаимные подписчики: 46\",\"social_context\":\"Подписчики: nahuyaggre+56\",\"search_social_context\":\"Подписчики: nahuyaggre+56\",\"mutual_followers_count\":46,\"following\":false,\"outgoing_request\":false}}],\"places\":[],\"hashtags\":[],\"has_more\":false,\"rank_token\":\"3d0af3b8-e35f-48b9-8b12-e01f45145e41\",\"status\":\"ok\"}")
+
+	accounts, err := getFromSearchPage(jsonBody)
+	if err != nil {
+		t.Error(err)
+	}
+	if accounts[0].ID != id {
+		t.Error("Incorrect account ID.")
+	}
+	if accounts[0].FullName != fullname {
+		t.Error("Incorrect account fullname.")
+	}
+	if accounts[0].Private {
+		t.Error("Incorrect account private field.")
+	}
+	if accounts[0].Verified {
+		t.Error("Incorrect account verified field.")
+	}
+	if accounts[0].Followers == 0 {
+		t.Error("Incorrect account followers count.")
+	}
+}
