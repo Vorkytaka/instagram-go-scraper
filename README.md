@@ -1,6 +1,6 @@
 # Instagram Go Scraper 
-[![GoDoc](https://godoc.org/github.com/SolidlSnake/instagram-go-scraper/instagram?status.svg)](https://godoc.org/github.com/SolidlSnake/instagram-go-scraper/instagram)
-[![Build Status](https://travis-ci.org/SolidlSnake/instagram-go-scraper.svg?branch=master)](https://travis-ci.org/SolidlSnake/instagram-go-scraper)
+[![GoDoc](https://godoc.org/github.com/Vorkytaka/instagram-go-scraper/instagram?status.svg)](https://godoc.org/github.com/Vorkytaka/instagram-go-scraper/instagram)
+[![Build Status](https://travis-ci.org/Vorkytaka/instagram-go-scraper.svg?branch=master)](https://travis-ci.org/SolidlSnake/instagram-go-scraper)
 
 Instagram Scraper for Golang.
 
@@ -9,11 +9,11 @@ A package that helps you with requesting to Instagram without a key.
 ### Installation:
 Install:
 ```
-$ go get -u github.com/SolidlSnake/instagram-go-scraper/instagram
+$ go get -u github.com/Vorkytaka/instagram-go-scraper/instagram
 ```
 Import:
 ```go
-import "github.com/SolidlSnake/instagram-go-scraper/instagram"
+import "github.com/Vorkytaka/instagram-go-scraper/instagram"
 ```
 
 ### List of functions:
