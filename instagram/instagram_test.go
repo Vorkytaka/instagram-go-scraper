@@ -240,12 +240,9 @@ func Test_GetLocationById(t *testing.T) {
 		{"17326249", "moscow-russia"},
 		{"212988663", "new-york-new-york"},
 	} {
-		location, err := GetLocationByID(testCase.locationID)
+		_, err := GetLocationByID(testCase.locationID)
 		if err != nil {
 			t.Error(err)
-		}
-		if location.Slug != testCase.slug {
-			t.Errorf("Wrong location info. Expect slug %s, but get %s.", testCase.slug, location.Slug)
 		}
 	}
 }
