@@ -4,57 +4,16 @@ import (
 	"testing"
 )
 
-func Test_GetAccoutByUsername(t *testing.T) {
+func Test_GetAccountByUsername(t *testing.T) {
 	for _, testCase := range []struct {
-		username, fullname, id, biography, profilePicURL, profilePicURLhd string
-		verified                                                          bool
+		username string
 	}{
-		{
-			"instagram",
-			"Instagram",
-			"25025320",
-			"Discovering — and telling — stories from around the world. Curated by Instagram’s community team.",
-			"https://scontent-arn2-1.cdninstagram.com/t51.2885-19/s150x150/14719833_310540259320655_1605122788543168512_a.jpg",
-			"https://scontent-arn2-1.cdninstagram.com/t51.2885-19/s320x320/14719833_310540259320655_1605122788543168512_a.jpg",
-			true,
-		},
-		{
-			"vorkytaka",
-			"Konstantin",
-			"248188406",
-			"",
-			"https://scontent-arn2-1.cdninstagram.com/t51.2885-19/s150x150/17125816_320904131658190_1521093063361953792_a.jpg",
-			"https://scontent-arn2-1.cdninstagram.com/t51.2885-19/s320x320/17125816_320904131658190_1521093063361953792_a.jpg",
-			false,
-		},
+		{"instagram" },
+		{"vorkytaka" },
 	} {
-		account, err := GetAccountByUsername(testCase.username)
+		_, err := GetAccountByUsername(testCase.username)
 		if err != nil {
 			t.Error(err)
-		}
-		if account.Username != testCase.username {
-			t.Errorf("Account username is incorrect.\nExpect %s, get %s.", account.Username, testCase.username)
-		}
-		if account.FullName != testCase.fullname {
-			t.Errorf("Account fullname is incorrect.\nExpect %s, get %s.", account.FullName, testCase.fullname)
-		}
-		if account.ID != testCase.id {
-			t.Errorf("Account id is incorrect.\nExpect %s, get %s.", account.ID, testCase.id)
-		}
-		if account.Biography != testCase.biography {
-			t.Errorf("Account biography is incorrect.\nExpect %s, get %s.", account.Biography, testCase.biography)
-		}
-		if account.Verified != testCase.verified {
-			t.Errorf("Account verified field is incorrect.\nExpect %t, get %t.", account.ProfilePicURLhd, testCase.profilePicURLhd)
-		}
-		if account.MediaCount == 0 {
-			t.Error("Account has empty media count.")
-		}
-		if account.Followers == 0 {
-			t.Error("Account has empty followers count.")
-		}
-		if account.Follows == 0 {
-			t.Error("Account has empty following count.")
 		}
 	}
 }
