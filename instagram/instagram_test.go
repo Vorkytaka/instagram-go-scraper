@@ -19,7 +19,7 @@ func Test_GetAccoutByUsername(t *testing.T) {
 			true,
 		},
 		{
-			"solidlsnake",
+			"vorkytaka",
 			"Konstantin",
 			"248188406",
 			"",
@@ -86,7 +86,7 @@ func Test_GetMediaByCode(t *testing.T) {
 			"https://scontent-arn2-1.cdninstagram.com/t51.2885-15/e15/11325321_112286479105192_62945882_n.jpg",
 			"248188406",
 			"https://scontent-arn2-1.cdninstagram.com/t51.2885-19/s150x150/17125816_320904131658190_1521093063361953792_a.jpg",
-			"solidlsnake",
+			"vorkytaka",
 			"Konstantin",
 		},
 		{
@@ -97,7 +97,7 @@ func Test_GetMediaByCode(t *testing.T) {
 			"https://scontent-arn2-1.cdninstagram.com/t50.2886-16/11175992_1616299585273258_350800542_n.mp4",
 			"248188406",
 			"https://scontent-arn2-1.cdninstagram.com/t51.2885-19/s150x150/17125816_320904131658190_1521093063361953792_a.jpg",
-			"solidlsnake",
+			"vorkytaka",
 			"Konstantin",
 		},
 	} {
@@ -167,7 +167,7 @@ func Test_GetMediaByCode_notExist(t *testing.T) {
 }
 
 func Test_GetUserMedia_quantity(t *testing.T) {
-	account, _ := GetAccountByUsername("solidlsnake")
+	account, _ := GetAccountByUsername("vorkytaka")
 	count := int(account.MediaCount)
 
 	for _, testCase := range []struct {
@@ -176,7 +176,7 @@ func Test_GetUserMedia_quantity(t *testing.T) {
 		expected int
 	}{
 		{"instagram", 10, 10},
-		{"solidlsnake", 999, count},
+		{"vorkytaka", 999, count},
 	} {
 		medias, err := GetAccountMedia(testCase.username, testCase.quantity)
 		if err != nil {
@@ -194,7 +194,7 @@ func Test_GetAllUserMedia_quantity(t *testing.T) {
 		username string
 	}{
 		{"drdre"},
-		{"solidlsnake"},
+		{"vorkytaka"},
 	} {
 		account, _ := GetAccountByUsername(testCase.username)
 		expected := int(account.MediaCount)
@@ -209,7 +209,7 @@ func Test_GetAllUserMedia_quantity(t *testing.T) {
 }
 
 func Test_getFromAccountMediaList(t *testing.T) {
-	media, err := GetAllAccountMedia("solidlsnake")
+	media, err := GetAllAccountMedia("vorkytaka")
 	lastPos := len(media) - 1
 	if err != nil {
 		t.Error(err)
@@ -226,7 +226,7 @@ func Test_getFromAccountMediaList(t *testing.T) {
 	if media[lastPos].Type != "image" {
 		t.Errorf("Media type is incorrect.")
 	}
-	if media[lastPos].Owner.Username != "solidlsnake" {
+	if media[lastPos].Owner.Username != "vorkytaka" {
 		t.Errorf("Media's owner username is incorrect.")
 	}
 	if media[lastPos].Owner.FullName != "Konstantin" {
@@ -330,7 +330,7 @@ func Test_SearchForUsers(t *testing.T) {
 		username, id, fullname string
 	}{
 		{
-			"solidlsnake",
+			"vorkytaka",
 			"248188406",
 			"Konstantin",
 		},
@@ -382,7 +382,7 @@ func Test_AccountUpdate(t *testing.T) {
 	for _, testCase := range []struct {
 		username, fullname string
 	}{
-		{"solidlsnake", "Konstantin"},
+		{"vorkytaka", "Konstantin"},
 	} {
 		account := Account{}
 		account.Username = testCase.username
