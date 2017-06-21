@@ -36,7 +36,7 @@ func (a *Account) Update() error {
 	return nil
 }
 
-func getFromAccountPage(data []byte) (Account, bool) {
+func getFromAccountPage(data []byte) (Account, error) {
 	var accountJSON struct {
 		User struct {
 			Biography   string `json:"biography"`
@@ -62,7 +62,7 @@ func getFromAccountPage(data []byte) (Account, bool) {
 
 	err := json.Unmarshal(data, &accountJSON)
 	if err != nil {
-		return Account{}, false
+		return Account{}, err
 	}
 
 	account := Account{}
@@ -79,7 +79,7 @@ func getFromAccountPage(data []byte) (Account, bool) {
 	account.Follows = uint32(accountJSON.User.Follows.Count)
 	account.MediaCount = uint32(accountJSON.User.Media.Count)
 
-	return account, true
+	return account, nil
 }
 
 func getFromSearchPage(data []byte) ([]Account, error) {

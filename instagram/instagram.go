@@ -11,7 +11,6 @@ package instagram
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -25,9 +24,9 @@ func GetAccountByUsername(username string) (Account, error) {
 	if err != nil {
 		return Account{}, err
 	}
-	account, ok := getFromAccountPage(data)
-	if !ok {
-		return account, errors.New("Can't parse account")
+	account, err := getFromAccountPage(data)
+	if err != nil {
+		return account, err
 	}
 	return account, nil
 }
