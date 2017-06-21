@@ -18,7 +18,7 @@ func Test_GetAccountByUsername(t *testing.T) {
 	}
 }
 
-func Test_GetAccoutByUsername_notExist(t *testing.T) {
+func Test_GetAccountByUsername_notExist(t *testing.T) {
 	for _, testCase := range []struct {
 		username string
 	}{
