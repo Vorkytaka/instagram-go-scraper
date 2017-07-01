@@ -38,30 +38,11 @@ func Test_GetMediaByCode(t *testing.T) {
 	}{
 		{"ceiqEstT6r" },
 		{"12376OtT5o" },
+		{"BUxZSI3B5yq" },
 	} {
 		_, err := GetMediaByCode(testCase.code)
 		if err != nil {
 			t.Error(err)
-		}
-	}
-}
-
-func Test_GetMediaByCode_slider(t *testing.T) {
-	for _, testCase := range []struct {
-		code  string
-		count int
-	}{
-		{"BUxZSI3B5yq", 2 },
-	} {
-		media, err := GetMediaByCode(testCase.code)
-		if err != nil {
-			t.Error(err)
-		}
-		if media.Code != testCase.code {
-			t.Errorf("Media code is incorrect.\nExpect %s, get %s.", media.Code, testCase.code)
-		}
-		if len(media.MediaList) != testCase.count {
-			t.Errorf("Media list got incorrect size.\nExpect %d, get %d.", testCase.count, len(media.MediaList))
 		}
 	}
 }
