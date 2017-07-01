@@ -34,59 +34,14 @@ func Test_GetAccountByUsername_notExist(t *testing.T) {
 
 func Test_GetMediaByCode(t *testing.T) {
 	for _, testCase := range []struct {
-		caption, code, id, mediaType, mediaURL                    string
-		ownerID, ownerProfilePicURL, ownerUsername, ownerFullName string
+		code string
 	}{
-		{
-			"Дружище, есть че?",
-			"ceiqEstT6r",
-			"512999832411258539",
-			"image",
-			"https://scontent-arn2-1.cdninstagram.com/t51.2885-15/e15/11325321_112286479105192_62945882_n.jpg",
-			"248188406",
-			"https://scontent-arn2-1.cdninstagram.com/t51.2885-19/s150x150/17125816_320904131658190_1521093063361953792_a.jpg",
-			"vorkytaka",
-			"Konstantin",
-		},
-		{
-			"Зов джунглей",
-			"12376OtT5o",
-			"970208779275943528",
-			"video",
-			"https://scontent-arn2-1.cdninstagram.com/t50.2886-16/11175992_1616299585273258_350800542_n.mp4",
-			"248188406",
-			"https://scontent-arn2-1.cdninstagram.com/t51.2885-19/s150x150/17125816_320904131658190_1521093063361953792_a.jpg",
-			"vorkytaka",
-			"Konstantin",
-		},
+		{"ceiqEstT6r" },
+		{"12376OtT5o" },
 	} {
-		media, err := GetMediaByCode(testCase.code)
+		_, err := GetMediaByCode(testCase.code)
 		if err != nil {
 			t.Error(err)
-		}
-		if media.Caption != testCase.caption {
-			t.Errorf("Media caption is incorrect.\nExpect %s, get %s.", media.Caption, testCase.caption)
-		}
-		if media.Code != testCase.code || media.MediaList[0].Code != testCase.code {
-			t.Errorf("Media code is incorrect.\nExpect %s, get %s.", media.Code, testCase.code)
-		}
-		if media.ID != testCase.id {
-			t.Errorf("Media id is incorrect.\nExpect %s, get %s.", media.ID, testCase.id)
-		}
-		if media.Type != testCase.mediaType || media.MediaList[0].Type != testCase.mediaType {
-			t.Errorf("Media type is incorrect.\nExpect %s, get %s.", media.Type, testCase.mediaType)
-		}
-		if media.Owner.ID != testCase.ownerID {
-			t.Errorf("Media's owner ID is incorrect.\nExpect %s, get %s.", media.Owner.ID, testCase.ownerID)
-		}
-		if media.Owner.Username != testCase.ownerUsername {
-			t.Errorf("Media's owner username is incorrect.\nExpect %s, get %s.", media.Owner.Username, testCase.ownerUsername)
-		}
-		if media.Owner.FullName != testCase.ownerFullName {
-			t.Errorf("Media's owner fullname is incorrect.\nExpect %s, get %s.", media.Owner.FullName, testCase.ownerFullName)
-		}
-		if media.LikesCount == 0 {
-			t.Error("Media has empty likes count.")
 		}
 	}
 }
