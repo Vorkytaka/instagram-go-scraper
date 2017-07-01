@@ -157,3 +157,50 @@ func Test_getFromMediaPage_slider(t *testing.T) {
 		}
 	}
 }
+
+func Test_getFromAccountMediaList(t *testing.T) {
+	caption := "Всем добра и расслабона."
+	code := "YgBPkNtTz_"
+	mediaType := TypeImage
+	id := "441358231205657855_248188406"
+	date := uint64(1366834022)
+	ownerID := "248188406"
+	ownerUsername := "vorkytaka"
+	ownerFullname := "Konstantin"
+	likesCount := uint32(26)
+
+	jsonBody := []byte("{\"id\":\"441358231205657855_248188406\",\"code\":\"YgBPkNtTz_\",\"user\":{\"id\":\"248188406\",\"full_name\":\"Konstantin\",\"profile_picture\":\"https://instagram.fhen1-1.fna.fbcdn.net/t51.2885-19/s150x150/19379528_1740774492882462_5097328982882254848_a.jpg\",\"username\":\"vorkytaka\"},\"images\":{\"thumbnail\":{\"width\":150,\"height\":150,\"url\":\"https://instagram.fhen1-1.fna.fbcdn.net/t51.2885-15/s150x150/e15/11330527_1587491721510550_960812045_n.jpg\"},\"low_resolution\":{\"width\":320,\"height\":320,\"url\":\"https://instagram.fhen1-1.fna.fbcdn.net/t51.2885-15/s320x320/e15/11330527_1587491721510550_960812045_n.jpg\"},\"standard_resolution\":{\"width\":612,\"height\":612,\"url\":\"https://instagram.fhen1-1.fna.fbcdn.net/t51.2885-15/e15/11330527_1587491721510550_960812045_n.jpg\"}},\"created_time\":\"1366834022\",\"caption\":{\"id\":\"17850024664060407\",\"text\":\"Всем добра и расслабона.\",\"created_time\":\"1366834022\",\"from\":{\"id\":\"248188406\",\"full_name\":\"Konstantin\",\"profile_picture\":\"https://instagram.fhen1-1.fna.fbcdn.net/t51.2885-19/s150x150/19379528_1740774492882462_5097328982882254848_a.jpg\",\"username\":\"vorkytaka\"}},\"user_has_liked\":false,\"likes\":{\"data\":[{\"id\":\"278425203\",\"full_name\":\"Fahri Muradov\",\"profile_picture\":\"https://scontent-cdt1-1.cdninstagram.com/t51.2885-19/11906329_960233084022564_1448528159_a.jpg\",\"username\":\"fahrimuradov\"},{\"id\":\"23777215\",\"full_name\":\"Антон\",\"profile_picture\":\"https://instagram.fhen1-1.fna.fbcdn.net/t51.2885-19/s150x150/13628374_292016351178975_1594723130_a.jpg\",\"username\":\"anton.checherin\"},{\"id\":\"259412979\",\"full_name\":\"⠀⠀⠀⠀⠀⠀⠀⠀⠀➰ Anastasia Feduró ➰\",\"profile_picture\":\"https://instagram.fhen1-1.fna.fbcdn.net/t51.2885-19/s150x150/19120305_1502589806429988_2144714875857797120_a.jpg\",\"username\":\"asansyy\"},{\"id\":\"12910777\",\"full_name\":\"Yury Isaev\",\"profile_picture\":\"https://instagram.fhen1-1.fna.fbcdn.net/t51.2885-19/11055431_859946827394988_1161718002_a.jpg\",\"username\":\"basay17\"}],\"count\":26},\"comments\":{\"data\":[{\"id\":\"17846804761060407\",\"text\":\"Это уже перебор D:\",\"created_time\":\"1366874266\",\"from\":{\"id\":\"215969458\",\"full_name\":\"Oleksandr Zahorulia\",\"profile_picture\":\"https://instagram.fhen1-1.fna.fbcdn.net/t51.2885-19/s150x150/13188116_1715562422017072_2142692244_a.jpg\",\"username\":\"hast4656\"}},{\"id\":\"17846806420060407\",\"text\":\"@hast4656 ты еще первый вариант не видел... :(\",\"created_time\":\"1367136817\",\"from\":{\"id\":\"248188406\",\"full_name\":\"Konstantin\",\"profile_picture\":\"https://instagram.fhen1-1.fna.fbcdn.net/t51.2885-19/s150x150/19379528_1740774492882462_5097328982882254848_a.jpg\",\"username\":\"vorkytaka\"}},{\"id\":\"17848842157060407\",\"text\":\"Ахаха))\",\"created_time\":\"1390122094\",\"from\":{\"id\":\"210783735\",\"full_name\":\"Константин Сахно\",\"profile_picture\":\"https://instagram.fhen1-1.fna.fbcdn.net/t51.2885-19/s150x150/13739563_270619919990094_445324022_a.jpg\",\"username\":\"sahno.life\"}}],\"count\":8},\"can_view_comments\":true,\"can_delete_comments\":true,\"type\":\"image\",\"link\":\"https://www.instagram.com/p/YgBPkNtTz_/\",\"location\":null,\"alt_media_url\":null}")
+
+	media, err := getFromAccountMediaList(jsonBody)
+
+	if err != nil {
+		t.Error(err)
+	}
+	if media.Caption != caption {
+		t.Errorf("Media caption is incorrect.\nExpect %s, get %s.", caption, media.Caption)
+	}
+	if media.Code != code {
+		t.Errorf("Media code is incorrect.\nExpect %s, get %s.", code, media.Code)
+	}
+	if media.ID != id {
+		t.Errorf("Media id is incorrect.\nExpect %s, get %s.", id, media.ID)
+	}
+	if media.Type != mediaType {
+		t.Errorf("Media type is incorrect.\nExpect %s, get %s.", mediaType, media.Type)
+	}
+	if media.Owner.ID != ownerID {
+		t.Errorf("Media's owner ID is incorrect.\nExpect %s, get %s.", ownerID, media.Owner.ID)
+	}
+	if media.Owner.Username != ownerUsername {
+		t.Errorf("Media's owner username is incorrect.\nExpect %s, get %s.", ownerUsername, media.Owner.Username)
+	}
+	if media.Owner.FullName != ownerFullname {
+		t.Errorf("Media's owner fullname is incorrect.\nExpect %s, get %s.", ownerFullname, media.Owner.FullName)
+	}
+	if media.LikesCount != likesCount {
+		t.Errorf("Media's likes count is wrong.\nExpect %d, get %d", likesCount, media.LikesCount)
+	}
+	if media.Date != date {
+		t.Errorf("Media's data is wrong.\nExpect %d, get %d", date, media.Date)
+	}
+}

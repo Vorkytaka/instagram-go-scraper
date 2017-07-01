@@ -103,38 +103,6 @@ func Test_GetAllUserMedia_quantity(t *testing.T) {
 	}
 }
 
-func Test_getFromAccountMediaList(t *testing.T) {
-	media, err := GetAllAccountMedia("vorkytaka")
-	lastPos := len(media) - 1
-	if err != nil {
-		t.Error(err)
-	}
-	if media[lastPos].Caption != "Всем добра и расслабона." {
-		t.Errorf("Media caption is incorrect.")
-	}
-	if media[lastPos].Code != "YgBPkNtTz_" {
-		t.Errorf("Media code is incorrect.")
-	}
-	if media[lastPos].ID != "441358231205657855_248188406" {
-		t.Errorf("Media id is incorrect.")
-	}
-	if media[lastPos].Type != "image" {
-		t.Errorf("Media type is incorrect.")
-	}
-	if media[lastPos].Owner.Username != "vorkytaka" {
-		t.Errorf("Media's owner username is incorrect.")
-	}
-	if media[lastPos].Owner.FullName != "Konstantin" {
-		t.Errorf("Media's owner fullname is incorrect.")
-	}
-	if media[lastPos].LikesCount == 0 {
-		t.Error("Media has empty likes count.")
-	}
-	if media[lastPos].CommentsCount == 0 {
-		t.Error("Media has empty comments count.")
-	}
-}
-
 func Test_GetLocationMedia_quantity(t *testing.T) {
 	for _, testCase := range []struct {
 		locationID string
