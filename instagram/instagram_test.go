@@ -103,48 +103,6 @@ func Test_GetAllUserMedia_quantity(t *testing.T) {
 	}
 }
 
-func Test_GetLocationMedia_quantity(t *testing.T) {
-	for _, testCase := range []struct {
-		locationID string
-		quantity   uint16
-	}{
-		{"17326249", 10},
-		{"17326249", 25},
-	} {
-		_, err := GetLocationMedia(testCase.locationID, testCase.quantity)
-		if err != nil {
-			t.Error(err)
-		}
-	}
-}
-
-func Test_GetLocationTopMedia_quantity(t *testing.T) {
-	for _, testCase := range []struct {
-		locationID string
-	}{
-		{"17326249"},
-	} {
-		_, err := GetLocationTopMedia(testCase.locationID)
-		if err != nil {
-			t.Error(err)
-		}
-	}
-}
-
-func Test_GetLocationById(t *testing.T) {
-	for _, testCase := range []struct {
-		locationID, slug string
-	}{
-		{"17326249", "moscow-russia"},
-		{"212988663", "new-york-new-york"},
-	} {
-		_, err := GetLocationByID(testCase.locationID)
-		if err != nil {
-			t.Error(err)
-		}
-	}
-}
-
 func Test_GetTagMedia_quantity(t *testing.T) {
 	for _, testCase := range []struct {
 		tag      string
