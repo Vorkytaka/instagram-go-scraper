@@ -111,12 +111,9 @@ func Test_GetLocationMedia_quantity(t *testing.T) {
 		{"17326249", 10},
 		{"17326249", 25},
 	} {
-		medias, err := GetLocationMedia(testCase.locationID, testCase.quantity)
+		_, err := GetLocationMedia(testCase.locationID, testCase.quantity)
 		if err != nil {
 			t.Error(err)
-		}
-		if len(medias) != int(testCase.quantity) {
-			t.Errorf("Wrong numbers of media. Expect %d, get %d.", testCase.quantity, len(medias))
 		}
 	}
 }
@@ -127,12 +124,9 @@ func Test_GetLocationTopMedia_quantity(t *testing.T) {
 	}{
 		{"17326249"},
 	} {
-		medias, err := GetLocationTopMedia(testCase.locationID)
+		_, err := GetLocationTopMedia(testCase.locationID)
 		if err != nil {
 			t.Error(err)
-		}
-		if len(medias) != 9 {
-			t.Error("Wrong numbers of media.")
 		}
 	}
 }
@@ -159,12 +153,9 @@ func Test_GetTagMedia_quantity(t *testing.T) {
 		{"lol", 10},
 		{"haha", 25},
 	} {
-		medias, err := GetTagMedia(testCase.tag, testCase.quantity)
+		_, err := GetTagMedia(testCase.tag, testCase.quantity)
 		if err != nil {
 			t.Error(err)
-		}
-		if len(medias) != int(testCase.quantity) {
-			t.Error("Wrong numbers of media.")
 		}
 	}
 }
@@ -175,12 +166,9 @@ func Test_GetTagTopMedia_quantity(t *testing.T) {
 	}{
 		{"lol"},
 	} {
-		medias, err := GetTagTopMedia(testCase.tag)
+		_, err := GetTagTopMedia(testCase.tag)
 		if err != nil {
 			t.Error(err)
-		}
-		if len(medias) != 9 {
-			t.Error("Wrong numbers of media.")
 		}
 	}
 }

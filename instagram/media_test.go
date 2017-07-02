@@ -204,3 +204,42 @@ func Test_getFromAccountMediaList(t *testing.T) {
 		t.Errorf("Media's data is wrong.\nExpect %d, get %d", date, media.Date)
 	}
 }
+
+func Test_getFromSearchMediaList(t *testing.T) {
+	caption := "похоже, за мной ведется слежка.😨\n#Вонни_и_Тигряш_снова_взялись_за_старое"
+	code := "BWBttHKBIOt"
+	mediaType := TypeImage
+	id := "1549720758945874861"
+	date := uint64(1498961132)
+	ownerID := "1600432094"
+	likesCount := uint32(0)
+
+	jsonBody := []byte("{\"comments_disabled\":false,\"id\":\"1549720758945874861\",\"dimensions\":{\"height\":750,\"width\":750},\"owner\":{\"id\":\"1600432094\"},\"thumbnail_src\":\"https://instagram.fhen1-1.fna.fbcdn.net/t51.2885-15/s640x640/sh0.08/e35/19534623_792226310936089_2265516487529725952_n.jpg\",\"is_video\":false,\"code\":\"BWBttHKBIOt\",\"date\":1498961132,\"display_src\":\"https://instagram.fhen1-1.fna.fbcdn.net/t51.2885-15/e35/19534623_792226310936089_2265516487529725952_n.jpg\",\"caption\":\"похоже, за мной ведется слежка.😨\\n#Вонни_и_Тигряш_снова_взялись_за_старое\",\"comments\":{\"count\":0},\"likes\":{\"count\":0}}")
+
+	media, err := getFromSearchMediaList(jsonBody)
+
+	if err != nil {
+		t.Error(err)
+	}
+	if media.Caption != caption {
+		t.Errorf("Media caption is incorrect.\nExpect %s, get %s.", caption, media.Caption)
+	}
+	if media.Code != code {
+		t.Errorf("Media code is incorrect.\nExpect %s, get %s.", code, media.Code)
+	}
+	if media.ID != id {
+		t.Errorf("Media id is incorrect.\nExpect %s, get %s.", id, media.ID)
+	}
+	if media.Type != mediaType {
+		t.Errorf("Media type is incorrect.\nExpect %s, get %s.", mediaType, media.Type)
+	}
+	if media.Owner.ID != ownerID {
+		t.Errorf("Media's owner ID is incorrect.\nExpect %s, get %s.", ownerID, media.Owner.ID)
+	}
+	if media.LikesCount != likesCount {
+		t.Errorf("Media's likes count is wrong.\nExpect %d, get %d", likesCount, media.LikesCount)
+	}
+	if media.Date != date {
+		t.Errorf("Media's data is wrong.\nExpect %d, get %d", date, media.Date)
+	}
+}
