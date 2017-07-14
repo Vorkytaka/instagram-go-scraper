@@ -24,7 +24,7 @@ const TypeCarousel = "carousel"
 
 const (
 	graphVideo   = "GraphVideo"
-	graphSidebar = "GraphSidecar"
+	graphSidecar = "GraphSidecar"
 
 	video    = "video"
 	carousel = "carousel"
@@ -124,7 +124,7 @@ func getFromMediaPage(data []byte) (Media, error) {
 	media.Caption = mediaJSON.Graphql.ShortcodeMedia.EdgeMediaToCaption.Edges[0].Node.Text
 
 	var mediaType = mediaJSON.Graphql.ShortcodeMedia.Typename
-	if mediaType == graphSidebar {
+	if mediaType == graphSidecar {
 		for _, itemJSON := range mediaJSON.Graphql.ShortcodeMedia.EdgeSidecarToChildren.Edges {
 			var item mediaItem
 			item.Code = itemJSON.Node.Shortcode
