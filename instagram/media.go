@@ -24,7 +24,7 @@ const TypeCarousel = "carousel"
 
 const (
 	graphVideo   = "GraphVideo"
-	graphSidebar = "GraphSidecar"
+	graphSidebar = "GraphSidebar"
 
 	video    = "video"
 	carousel = "carousel"
