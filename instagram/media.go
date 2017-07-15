@@ -121,7 +121,10 @@ func getFromMediaPage(data []byte) (Media, error) {
 	media.Date = uint64(mediaJSON.Graphql.ShortcodeMedia.TakenAtTimestamp)
 	media.CommentsCount = uint32(mediaJSON.Graphql.ShortcodeMedia.EdgeMediaToComment.Count)
 	media.LikesCount = uint32(mediaJSON.Graphql.ShortcodeMedia.EdgeMediaPreviewLike.Count)
-	media.Caption = mediaJSON.Graphql.ShortcodeMedia.EdgeMediaToCaption.Edges[0].Node.Text
+
+	if len(mediaJSON.Graphql.ShortcodeMedia.EdgeMediaToCaption.Edges) > 0 {
+		media.Caption = mediaJSON.Graphql.ShortcodeMedia.EdgeMediaToCaption.Edges[0].Node.Text
+	}
 
 	var mediaType = mediaJSON.Graphql.ShortcodeMedia.Typename
 	if mediaType == graphSidecar {
