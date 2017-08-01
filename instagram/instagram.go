@@ -15,6 +15,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"strings"
+	"errors"
 )
 
 // GetAccountByUsername try to find account by username.
@@ -281,8 +282,13 @@ func getJSONFromURL(url string) (map[string]interface{}, error) {
 
 func getDataFromURL(url string) ([]byte, error) {
 	resp, err := http.Get(url)
-	if err != nil || resp.StatusCode == 404 {
+
+	if err != nil {
 		return nil, err
+	}
+
+	if resp.StatusCode != 200 {
+		return nil, errors.New( "statusCode != 200")
 	}
 	defer resp.Body.Close()
 
